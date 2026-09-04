@@ -2,6 +2,7 @@
   "name": "acorn-juge",
   "private": true,
   "type": "module",
+  "license": "MIT",
   "description": "Acorn canal GET /juge — Cloudflare Worker. Preview, not a receipt.",
   "scripts": {
     "test": "node --test test/juge.test.js"

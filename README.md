@@ -32,6 +32,8 @@ A 200 here is **APERÇU / CLASSIQUE**. Never QUANTUM. Never a quittance.
 AI agents call this Worker the same way: query the four keys, read JSON.
 They are not the judge. Judgment = Carl.
 
+CORS on JSON `/juge` and OPTIONS is allowlisted (vitrine + this Worker’s own `*.workers.dev` host), not `*`. Carl can widen later.
+
 ## Missing ε — FLAG, not a seal
 
 Three consumers, one lie, one split. This repo does **not** collapse the

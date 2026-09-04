@@ -17,6 +17,57 @@ const QUELLE = ["os", "qrng", "qkd"];
 const TEMOIN = ["aucun", "stat", "fabricant", "di"];
 const PREVIEW_ID = "preview00001";
 
+/**
+ * CORS allowlist for JSON / OPTIONS. Carl can widen later.
+ * Start here only — do not invent extra domains:
+ *   - ORIGIN (vitrine)
+ *   - this Worker's own *.workers.dev host when deployed (from req.url)
+ * Never send Access-Control-Allow-Origin: *.
+ */
+function parseOrigin(value) {
+  if (value == null || String(value).trim() === "") return null;
+  try {
+    const u = new URL(String(value).trim());
+    if (u.origin === "null" || u.username || u.password) return null;
+    return u.origin;
+  } catch {
+    return null;
+  }
+}
+
+function workerDevOrigin(req) {
+  const self = parseOrigin(new URL(req.url).origin);
+  if (!self) return null;
+  const host = new URL(self).hostname;
+  if (host.endsWith(".workers.dev")) return self;
+  return null;
+}
+
+function isAllowlistedOrigin(origin, req) {
+  const incoming = parseOrigin(origin);
+  if (!incoming) return false;
+  if (incoming === ORIGIN) return true;
+  const selfDev = workerDevOrigin(req);
+  return selfDev != null && incoming === selfDev;
+}
+
+function reflectAllowlistedOrigin(req) {
+  const incoming = req.headers.get("Origin");
+  if (incoming == null || String(incoming).trim() === "") {
+    // no Origin: same-origin / non-browser — advertise the vitrine, never *
+    return ORIGIN;
+  }
+  if (isAllowlistedOrigin(incoming, req)) return parseOrigin(incoming);
+  return null;
+}
+
+function corsHeaders(req) {
+  const headers = { vary: "Origin" };
+  const allowed = reflectAllowlistedOrigin(req);
+  if (allowed) headers["access-control-allow-origin"] = allowed;
+  return headers;
+}
+
 const PHRASE = Object.freeze({
   lie: "Error margin zero is a lie",
   missing:
@@ -31,23 +82,23 @@ const PHRASE = Object.freeze({
   apercu: "Preview allow — not a receipt",
 });
 
-function json(status, body, extraHeaders = {}) {
+function json(req, status, body, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "access-control-allow-origin": "*",
+      ...corsHeaders(req),
       "cache-control": "no-store",
       ...extraHeaders,
     },
   });
 }
 
-function corsPreflight() {
+function corsPreflight(req) {
   return new Response(null, {
     status: 204,
     headers: {
-      "access-control-allow-origin": "*",
+      ...corsHeaders(req),
       "access-control-allow-methods": "GET, OPTIONS",
       "access-control-allow-headers": "content-type, accept",
       "access-control-max-age": "86400",
@@ -79,10 +130,10 @@ export async function handle(req, opts = {}) {
   const today = opts.today || todayUTC();
   const doFetch = opts.fetchImpl || fetch;
 
-  if (req.method === "OPTIONS") return corsPreflight();
+  if (req.method === "OPTIONS") return corsPreflight(req);
 
   if (url.pathname === "/attest") {
-    return json(404, {
+    return json(req, 404, {
       error: "not_this_canal",
       preview: true,
       phrase: PHRASE.attest,
@@ -93,19 +144,20 @@ export async function handle(req, opts = {}) {
   if (url.pathname === "/juge") {
     if (req.method !== "GET") {
       return json(
+        req,
         405,
         { error: "method", phrase: PHRASE.method, preview: true },
         { allow: "GET, OPTIONS" },
       );
     }
-    return jugeGet(url.searchParams, today);
+    return jugeGet(req, url.searchParams, today);
   }
 
   const u = new URL(url.pathname + url.search, ORIGIN);
   return doFetch(u.toString(), { method: req.method, headers: req.headers });
 }
 
-function jugeGet(p, today) {
+function jugeGet(req, p, today) {
   const quelle = p.get("quelle") || "os";
   const temoin =
     !p.get("temoin") || p.get("temoin") === "none" ? "aucun" : p.get("temoin");
@@ -113,7 +165,7 @@ function jugeGet(p, today) {
   const transcript = p.get("transcript");
 
   if (!QUELLE.includes(quelle) || !TEMOIN.includes(temoin)) {
-    return json(400, {
+    return json(req, 400, {
       error: "cards",
       phrase: PHRASE.cards,
       preview: true,
@@ -122,7 +174,7 @@ function jugeGet(p, today) {
 
   const eps = lireEpsilon(p.get("epsilon"));
   if (eps.kind === "missing") {
-    return json(400, {
+    return json(req, 400, {
       error: "EPSILON_MISSING",
       preview: true,
       phrase: PHRASE.missing,
@@ -134,7 +186,7 @@ function jugeGet(p, today) {
     });
   }
   if (eps.kind === "lie") {
-    return json(400, {
+    return json(req, 400, {
       error: "lie",
       phrase: PHRASE.lie,
       preview: true,
@@ -142,7 +194,7 @@ function jugeGet(p, today) {
   }
 
   if (!horizon || !/^\d{4}-\d{2}-\d{2}$/.test(horizon) || horizon < today) {
-    return json(400, {
+    return json(req, 400, {
       error: "horizon",
       phrase: PHRASE.horizon,
       preview: true,
@@ -150,7 +202,7 @@ function jugeGet(p, today) {
   }
 
   if (temoin === "di" && !transcript) {
-    return json(400, {
+    return json(req, 400, {
       error: "transcript",
       phrase: PHRASE.transcript,
       preview: true,
@@ -158,7 +210,7 @@ function jugeGet(p, today) {
   }
 
   const status = quelle === "os" ? "CLASSIQUE" : "APERÇU";
-  return json(200, {
+  return json(req, 200, {
     id: PREVIEW_ID,
     status,
     preview: true,

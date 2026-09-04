@@ -106,5 +106,6 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-No LICENSE file in this repo. Legal HOLD until Carl.
-No QUANTUM in Git. Preview ≠ receipt.
+MIT License — this repository's code and documentation only. See [LICENSE](LICENSE) and [COPYRIGHT.md](COPYRIGHT.md).
+This project is not formally verified.
+QUANTUM is not licensed here. Preview ≠ receipt.

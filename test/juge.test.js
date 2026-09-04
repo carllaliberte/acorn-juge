@@ -146,7 +146,8 @@ describe("GET /juge — preview, not a seal", () => {
     const res = await call(
       "/juge?quelle=os&temoin=aucun&epsilon=1e-6&horizon=2027-12-31",
     );
-    assert.equal(res.headers.get("access-control-allow-origin"), "*");
+    assert.notEqual(res.headers.get("access-control-allow-origin"), "*");
+    assert.equal(res.headers.get("access-control-allow-origin"), ORIGIN);
     assert.equal(res.headers.get("cache-control"), "no-store");
     assert.match(res.headers.get("content-type"), /application\/json/);
   });
@@ -180,6 +181,90 @@ describe("POST /attest — honest miss, not HTML 404", () => {
     assert.equal(j.error, "not_this_canal");
     assert.equal(j.juge, "/juge");
     assert.equal(j.preview, true);
+  });
+});
+
+const PREVIEW =
+  "/juge?quelle=os&temoin=aucun&epsilon=1e-6&horizon=2027-12-31";
+
+function acao(res) {
+  return res.headers.get("access-control-allow-origin");
+}
+
+describe("CORS allowlist — never *", () => {
+  it("does not send Access-Control-Allow-Origin: * on JSON", async () => {
+    const res = await call(PREVIEW);
+    assert.notEqual(acao(res), "*");
+  });
+
+  it("does not send Access-Control-Allow-Origin: * on OPTIONS", async () => {
+    const res = await call(PREVIEW, { method: "OPTIONS" });
+    assert.equal(res.status, 204);
+    assert.notEqual(acao(res), "*");
+  });
+
+  it("echoes the allowlisted vitrine Origin", async () => {
+    const res = await call(PREVIEW, { headers: { origin: ORIGIN } });
+    assert.equal(acao(res), ORIGIN);
+    assert.notEqual(acao(res), "*");
+  });
+
+  it("echoes this Worker's own workers.dev Origin", async () => {
+    const worker = "https://acorn-juge.example.workers.dev";
+    const res = await handle(new Request(worker + PREVIEW, {
+      headers: { origin: worker },
+    }), { today: TODAY });
+    assert.equal(acao(res), worker);
+    assert.notEqual(acao(res), "*");
+  });
+
+  it("omits ACAO for an unknown Origin — does not send *", async () => {
+    const res = await call(PREVIEW, {
+      headers: { origin: "https://evil.example" },
+    });
+    assert.equal(acao(res), null);
+    assert.notEqual(acao(res), "*");
+    assert.notEqual(acao(res), "https://evil.example");
+  });
+
+  it("does not treat a foreign workers.dev Origin as allowlisted", async () => {
+    const res = await call(PREVIEW, {
+      headers: { origin: "https://other.workers.dev" },
+    });
+    assert.equal(acao(res), null);
+    assert.notEqual(acao(res), "*");
+  });
+
+  it("OPTIONS echoes allowlisted Origin and never *", async () => {
+    const res = await call("/juge", {
+      method: "OPTIONS",
+      headers: { origin: ORIGIN },
+    });
+    assert.equal(res.status, 204);
+    assert.equal(acao(res), ORIGIN);
+    assert.notEqual(acao(res), "*");
+    assert.match(res.headers.get("access-control-allow-methods"), /GET/);
+  });
+
+  it("OPTIONS omits ACAO for an unknown Origin", async () => {
+    const res = await call("/juge", {
+      method: "OPTIONS",
+      headers: { origin: "https://evil.example" },
+    });
+    assert.equal(res.status, 204);
+    assert.equal(acao(res), null);
+    assert.notEqual(acao(res), "*");
+  });
+
+  it("EPSILON_MISSING JSON still never sends *", async () => {
+    const res = await call("/juge?quelle=os&temoin=aucun&horizon=2027-12-31", {
+      headers: { origin: "https://evil.example" },
+    });
+    assert.equal(res.status, 400);
+    const j = await body(res);
+    assert.equal(j.error, "EPSILON_MISSING");
+    assert.notEqual(acao(res), "*");
+    assert.equal(acao(res), null);
   });
 });
 

@@ -34,6 +34,22 @@ A 200 here is **APERÇU / CLASSIQUE**. Never QUANTUM. Never a quittance.
 AI agents call this Worker the same way: query the four keys, read JSON.
 They are not the judge. Judgment = Carl.
 
+## Swarm (complementary, not a judge)
+
+GitHub Action `.github/workflows/swarm.yml` can comment on pull requests.
+It does **not** replace `npm test`. It does not merge. It does not wrangler.
+
+| Model | API id | When |
+|---|---|---|
+| Claude Sonnet 5 | `claude-sonnet-5` | every PR if `ANTHROPIC_API_KEY` |
+| Claude Fable 5 | `claude-fable-5` | `/fable` or label `fable` (same Anthropic key; cost) |
+| ChatGPT | `gpt-5.6-terra` | every PR if `OPENAI_API_KEY` |
+| DeepSeek | `deepseek-v4-flash` | every PR if `DEEPSEEK_API_KEY` |
+| Gemini | `gemini-3.8-flash` | every PR if `GEMINI_API_KEY` |
+
+Carl adds those secrets under repo Settings → Secrets → Actions.
+No secret → that model skips (fail-closed). Prompt: `.github/swarm/prompt.md`.
+
 CORS on JSON `/juge` and OPTIONS is allowlisted (vitrine + this Worker’s own `*.workers.dev` host), not `*`. Carl can widen later.
 
 ## Missing ε — FLAG, not a seal

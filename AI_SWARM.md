@@ -6,11 +6,18 @@ Factual coordination memory. Not a seal. Not LIVE VERIFIED.
 
 | Agent | Role |
 | --- | --- |
-| Carl Laliberté | Owner / final judge. Merge. Wrangler bind. |
+| Carl Laliberté | Owner / final judge. Merge. Wrangler bind. Secrets. |
 | Grok | Chief / orchestrator |
-| ChatGPT | Adversarial reviewer (off-Git unless pasted) |
+| Claude Sonnet 5 | PR review + test/docs notes (`claude-sonnet-5`). Auto if `ANTHROPIC_API_KEY`. |
+| Claude Fable 5 | Hard review, on-demand (`claude-fable-5`). `/fable` or label `fable`. Same Anthropic key. |
+| ChatGPT | Adversarial reviewer (`gpt-5.6-terra`). Auto if `OPENAI_API_KEY`. |
+| DeepSeek | Independent review (`deepseek-v4-flash`). Auto if `DEEPSEEK_API_KEY`. |
+| Gemini | Independent review (`gemini-3.8-flash`). Auto if `GEMINI_API_KEY`. |
 | Cursor | Implementation on rails |
-| CI (`juge.yml`) | `npm test` on push/PR |
+| CI (`juge.yml`) | `npm test` on push/PR — the lock |
+| CI (`swarm.yml`) | Complementary comments. `continue-on-error`. Does not replace tests. |
+
+None of the models merge, deploy, or declare LIVE.
 
 ## Invariants
 
@@ -23,26 +30,41 @@ Factual coordination memory. Not a seal. Not LIVE VERIFIED.
 - POST `/attest` is not this canal (JSON 404)
 - CODE VERIFIED ≠ TEST VERIFIED ≠ LIVE VERIFIED
 - Worker horizon ⊃ famille schema: `isCalendarDay` (real Gregorian day). `juge.v0.json` `horizon.pattern` is regex `YYYY-MM-DD` only. Document the écart; do not hide it; do not unwind the schema from this canal.
+- GET `/` proxy allowlists `accept` + `accept-language` only.
 
 ## Format
 
 FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF
 
+## Swarm wiring
+
+Workflow: `.github/workflows/swarm.yml` → `.github/swarm/review.mjs`
+Prompt: `.github/swarm/prompt.md`
+
+Comments on a PR: `/swarm` `/sonnet` `/fable` `/fabre` `/chatgpt` `/deepseek` `/gemini`
+
+Carl secrets (Actions, never in git):
+
+| Secret | Models |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Sonnet 5 (auto) + Fable 5 (on-demand) |
+| `OPENAI_API_KEY` | ChatGPT |
+| `DEEPSEEK_API_KEY` | DeepSeek |
+| `GEMINI_API_KEY` | Gemini |
+
+Missing secret → skip that model (fail-closed). Job is `continue-on-error`. Fork PRs have no secrets.
+
 ## State (2026-09-05)
 
-- `main` HEAD `c77a97e` — merge [PR #6](https://github.com/carllaliberte/acorn-juge/pull/6) (`canal: horizon must be a real calendar day`)
-- CODE VERIFIED on `main`
-- TEST VERIFIED on HEAD: `npm test` **30/30** (local, 2026-09-04 evening EDT). CI `preview` on PR #6: success.
-- LIVE: **NOT LIVE VERIFIED**. Re-probe 2026-09-05T00:09Z:
-  - `GET https://acorn-royal-dune-blend.grok.me/` → 200 `text/html` Famille vitrine
-  - `GET …/juge` (bare and with query) → 404 `text/html` (not JSON)
-  - `POST …/attest` → 404 `text/html`
-  - `acorn-juge.workers.dev` / `acorn-juge.carllaliberte.workers.dev` → NXDOMAIN
-- Known écart: Worker `isCalendarDay` rejects `2027-02-31`; famille `juge.v0.json` regex would accept the string. ε split named (`EPSILON_MISSING` ≠ `lie`).
-- P2 (if P1 lands): GET `/` proxy currently forwards `req.headers` wholesale to the vitrine.
+- `main` HEAD `6b1abfb` — merge PR #7 (docs) on PR #8 (proxy allowlist)
+- CODE VERIFIED on `main` (calendar day + header allowlist)
+- TEST VERIFIED on HEAD: `npm test` **32/32** before swarm PR
+- LIVE: **NOT LIVE VERIFIED**. `GET …/juge` still HTML 404. `*.workers.dev` NXDOMAIN
+- Swarm: PROPOSED on a PR. Not LIVE. Not a second host.
 
 ## Open decisions (Carl)
 
+- Add the four Actions secrets (or a subset)
 - When to `wrangler deploy` and bind `/juge` on the cited host
 - Whether Worker missing-ε 400 and famille sdk classique should ever collapse (default: **no**)
-- Merge of docs / P2 PRs. No bot deploys. No second `*.grok.me`.
+- No bot deploys. No second `*.grok.me`.

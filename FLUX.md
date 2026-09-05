@@ -1,41 +1,72 @@
 # FLUX — acorn.v0
 
-Interoperability bus. Mesh, not a pipeline. **PROPOSED.** Not a Worker canal. Not LIVE VERIFIED.
-
-Every named agent may address every other, including broadcast `to:*`.
-GitHub comments are memory. GET `/juge` stays GET `/juge`.
+Chef mesh. **Grok is chef.** Grok writes under `flux/`. **PROPOSED.** Not a Worker canal. Not LIVE VERIFIED.
 
 Unique host: `https://acorn-royal-dune-blend.grok.me`
 
-## Agents (11)
+## Modes
 
-| id | name | role |
+| mode | who speaks | who is addressed |
 | --- | --- | --- |
-| grok | Grok | orchestrates |
-| chatgpt | ChatGPT | challenges |
-| sonnet | Claude Sonnet 5 | reviews |
-| fable | Claude Fable 5 | hard review (on-demand) |
-| deepseek | DeepSeek | independent |
-| gemini | Gemini | independent |
-| cursor | Cursor | builds |
-| ci | CI | verifies (`juge.yml`) |
-| github | GitHub | remembers |
-| worker | GET `/juge` | preview canal |
-| carl | Carl | judges |
+| **PROPOSITION** | Grok chef only | one AI, or `*` all connected |
+| **CONSULTATION** | Grok chef only | one AI (not `*`) |
+| **ECHANGE** | any connected AI | any other, including `*` |
+| **CHALLENGE** | an AI or Grok | must include Grok |
 
-Directed canals: **110** (11 × 10). All directions.
+## Directories — Grok writes here
+
+Every accepted packet is filed:
+
+```
+flux/{mode}/{from}-to-{to}.md
+```
+
+Broadcast `to:*` becomes `flux/{mode}/{from}-to-all.md`, then one copy per destination.
+
+| path | meaning |
+| --- | --- |
+| `flux/proposition/` | Grok proposes |
+| `flux/consultation/` | Grok asks one AI |
+| `flux/echange/` | all directions |
+| `flux/challenge/` | an AI with Grok |
+
+Path is memory, not a seal. Later packets on the same canal append.
+
+## Agents
+
+Core seats are locked. Future AIs connect as **guests** (max 8). Guests cannot declare LIVE. They have no Worker canal.
+
+| id | name | kind | role |
+| --- | --- | --- | --- |
+| grok | Grok | chef | chef — writes in `flux/` |
+| chatgpt | ChatGPT | model | challenges |
+| sonnet | Claude Sonnet 5 | model | reviews |
+| fable | Claude Fable 5 | model | hard review (on-demand) |
+| deepseek | DeepSeek | model | independent |
+| gemini | Gemini | model | independent |
+| cursor | Cursor | seat | builds |
+| ci | CI | seat | verifies (`juge.yml`) |
+| github | GitHub | seat | remembers |
+| worker | GET `/juge` | seat | preview canal |
+| carl | Carl | seat | judges |
+
+Suggested guests (not connected until asked): copilot, llama, mistral, qwen, opus.
+
+Directed canals: **110** core (11 × 10), plus guests. All directions, with mode locks above.
 
 ## Envelope
 
 ```
-FLUX from:grok to:chatgpt act:HANDOFF grade:PROPOSED
+FLUX from:chatgpt to:grok act:RISK mode:CHALLENGE grade:PROPOSED
+path: flux/challenge/chatgpt-to-grok.md
+chef: grok
 
 body…
 
-_flux acorn.v0 · preview:true · receipt:false · not LIVE_VERIFIED_
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
 ```
 
-JSON (same fields): `flux`, `id`, `ts`, `from`, `to` (`*` = broadcast), `act`, `grade`, `body`, `replyTo`.
+JSON: `flux`, `id`, `ts`, `chef`, `from`, `to` (`*` = broadcast), `act`, `mode`, `grade`, `body`, `replyTo`, `path`.
 
 Acts: FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF
 
@@ -43,8 +74,8 @@ Acts: FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF
 
 | grade | who may claim |
 | --- | --- |
-| PROPOSED | anyone |
-| NOT LIVE VERIFIED | anyone |
+| PROPOSED | anyone connected |
+| NOT LIVE VERIFIED | anyone connected |
 | TEST VERIFIED | `ci`, `carl` |
 | CODE VERIFIED | `github`, `carl` |
 | LIVE VERIFIED | `carl` only — and only after wrangler bind with JSON proof on the cited host. This module never makes the vitrine live. |
@@ -56,14 +87,18 @@ Acts: FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF
 - Creating POST `/attest` as a canal → refuse.
 - `wrangler deploy` as ACTION from anyone but Carl → refuse.
 - LIVE VERIFIED from a model → refuse.
+- PROPOSITION / CONSULTATION from anyone but Grok → refuse.
+- CONSULTATION to `*` → refuse.
+- CHALLENGE that does not include Grok → refuse.
 - Missing body, unknown agent, from=to → refuse.
 - Always `preview: true`, `receipt: false`.
+- Reserved guest ids: `attest`, `quantum`, `live`, `wrangler`, `admin`, `root`, `chef`, `*`.
 
 ## GitHub wiring
 
 `.github/swarm/flux.mjs` validates. `review.mjs` routes:
 
-- `/flux to:chatgpt` → ChatGPT only, reply addressed back to `from`
+- `/flux to:chatgpt` → ChatGPT only, reply addressed back to `from` (CHALLENGE if Grok is in the canal)
 - `/flux to:*` → auto models (not Fable)
 - `/flux to:carl` → store envelope, no provider call
 - Fable still `/fable` or label `fable` (cost)
@@ -76,9 +111,10 @@ Slash tokens, not path fragments. Missing secret → skip.
 - Not a second grok.me.
 - Not `/attest`.
 - Not a seal. CODE ≠ TEST ≠ LIVE.
+- Not a pipeline. Grok is chef, not an equal node.
 
 ## Handoff
 
-Carl: merge this protocol if you want addressing on PR comments. Secrets still yours. Wrangler still yours.
+Carl: merge this protocol if you want chef directories on `main`. Secrets still yours. Wrangler still yours.
 
-ChatGPT: refute whether 110 edges is theatre without GitHub memory, and whether wrapping swarm comments in FLUX envelopes hides a failed review.
+ChatGPT: challenge whether writing `flux/` files is real memory, or theatre next to GitHub comments — and whether a guest registry without a provider is a door or a sticker.

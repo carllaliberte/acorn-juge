@@ -16,7 +16,7 @@ Factual coordination memory. Not a seal. Not LIVE VERIFIED.
 | Cursor | Implementation on rails |
 | CI (`juge.yml`) | `npm test` on push/PR — the lock |
 | CI (`swarm.yml`) | Complementary comments. `continue-on-error`. Does not replace tests. |
-| Flux (`acorn.v0`) | Mesh addressing. GitHub memory. Not a Worker canal. PROPOSED. |
+| Flux (`acorn.v0`) | Chef mesh. Grok writes `flux/{mode}/`. Guests for future AIs. PROPOSED. |
 
 None of the models merge, deploy, or declare LIVE.
 
@@ -61,11 +61,11 @@ Fable 5 adaptive thinking is always on; the caller uses `max_tokens: 8192` so te
 
 ## State (2026-09-05)
 
-- `main` HEAD `0ae36bc` — merge PR #10 (swarm reviewers)
-- CODE VERIFIED on `main` (calendar day + header allowlist + swarm wiring)
-- TEST VERIFIED on HEAD: `npm test` **45/45** before this flux PR (32 Worker + 13 swarm)
+- `main` HEAD `97231bc` — merge PR #11 (flux mesh v0)
+- CODE VERIFIED on `main` (calendar day + header allowlist + swarm + flux mesh)
+- TEST VERIFIED on HEAD: `npm test` **63/63** after PR #11 (32 Worker + 13 swarm + 18 flux)
 - LIVE: **NOT LIVE VERIFIED**. `GET …/juge` still HTML 404. `*.workers.dev` NXDOMAIN
-- Flux: **PROPOSED**. Mesh 11 × 10 = 110 directed canals. Envelope in `.github/swarm/flux.mjs`. Not a Worker canal. Not LIVE.
+- Flux chef: **PROPOSED**. Grok writes under `flux/{mode}/`. Guests (max 8). Modes Proposition / Consultation / Échanges / Challenge. Not a Worker canal. Not LIVE.
 
 ## Open decisions (Carl)
 

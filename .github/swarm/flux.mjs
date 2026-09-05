@@ -1,26 +1,26 @@
 /**
- * acorn flux v0 — interoperability bus.
- * Mesh: every named agent may address every other, including broadcast.
- * Not a Worker canal. Not a receipt. Not LIVE. Not QUANTUM.
- *
- * Memory = GitHub comments (source of truth).
- * This module is the envelope: validate, fan-out, parse, format.
+ * acorn flux v0 — chef mesh.
+ * Grok is chef. Grok writes in flux/ directories.
+ * Other AIs connect for the future. Not a Worker canal. Not LIVE. Not QUANTUM.
  */
 
 export const FLUX_VERSION = "acorn.v0";
+export const CHEF = "grok";
+export const HOST = "https://acorn-royal-dune-blend.grok.me";
+export const GUEST_CAP = 8;
 
 export const AGENTS = Object.freeze({
-  grok: { id: "grok", name: "Grok", role: "orchestrates" },
-  chatgpt: { id: "chatgpt", name: "ChatGPT", role: "challenges" },
-  sonnet: { id: "sonnet", name: "Claude Sonnet 5", role: "reviews" },
-  fable: { id: "fable", name: "Claude Fable 5", role: "hard review" },
-  deepseek: { id: "deepseek", name: "DeepSeek", role: "independent" },
-  gemini: { id: "gemini", name: "Gemini", role: "independent" },
-  cursor: { id: "cursor", name: "Cursor", role: "builds" },
-  ci: { id: "ci", name: "CI", role: "verifies" },
-  github: { id: "github", name: "GitHub", role: "remembers" },
-  worker: { id: "worker", name: "GET /juge", role: "preview canal" },
-  carl: { id: "carl", name: "Carl", role: "judges" },
+  grok: { id: "grok", name: "Grok", role: "chef", kind: "chef" },
+  chatgpt: { id: "chatgpt", name: "ChatGPT", role: "challenges", kind: "model" },
+  sonnet: { id: "sonnet", name: "Claude Sonnet 5", role: "reviews", kind: "model" },
+  fable: { id: "fable", name: "Claude Fable 5", role: "hard review", kind: "model" },
+  deepseek: { id: "deepseek", name: "DeepSeek", role: "independent", kind: "model" },
+  gemini: { id: "gemini", name: "Gemini", role: "independent", kind: "model" },
+  cursor: { id: "cursor", name: "Cursor", role: "builds", kind: "seat" },
+  ci: { id: "ci", name: "CI", role: "verifies", kind: "seat" },
+  github: { id: "github", name: "GitHub", role: "remembers", kind: "seat" },
+  worker: { id: "worker", name: "GET /juge", role: "preview canal", kind: "seat" },
+  carl: { id: "carl", name: "Carl", role: "judges", kind: "seat" },
 });
 
 export const AGENT_IDS = Object.freeze(Object.keys(AGENTS));
@@ -35,6 +35,13 @@ export const ACTS = Object.freeze([
   "HANDOFF",
 ]);
 
+export const MODES = Object.freeze([
+  "PROPOSITION",
+  "CONSULTATION",
+  "ECHANGE",
+  "CHALLENGE",
+]);
+
 export const GRADES = Object.freeze([
   "PROPOSED",
   "CODE VERIFIED",
@@ -43,25 +50,71 @@ export const GRADES = Object.freeze([
   "LIVE VERIFIED",
 ]);
 
-export const HOST = "https://acorn-royal-dune-blend.grok.me";
+/** Future AIs. Not core. Connect when Carl wants them on the mesh. */
+export const SUGGESTED_GUESTS = Object.freeze([
+  { id: "copilot", name: "GitHub Copilot", role: "guest review" },
+  { id: "llama", name: "Llama", role: "open guest" },
+  { id: "mistral", name: "Mistral", role: "open guest" },
+  { id: "qwen", name: "Qwen", role: "open guest" },
+  { id: "opus", name: "Claude Opus", role: "guest review" },
+]);
 
 const MODEL_IDS = new Set(["sonnet", "fable", "chatgpt", "deepseek", "gemini"]);
+const RESERVED = new Set([
+  "attest",
+  "quantum",
+  "live",
+  "wrangler",
+  "admin",
+  "root",
+  "chef",
+  "*",
+]);
+const ID_RE = /^[a-z][a-z0-9-]{1,24}$/;
+
+/** @type {Map<string, { id: string, name: string, role: string, kind: "guest" }>} */
+const GUESTS = new Map();
+
+export function resetGuests() {
+  GUESTS.clear();
+}
+
+export function roster() {
+  return [...Object.values(AGENTS), ...GUESTS.values()];
+}
+
+export function rosterIds() {
+  return roster().map((a) => a.id);
+}
+
+export function lookup(id) {
+  const key = String(id || "").toLowerCase();
+  return AGENTS[key] || GUESTS.get(key) || null;
+}
 
 export function isAgent(id) {
-  return Object.prototype.hasOwnProperty.call(AGENTS, String(id || ""));
+  return lookup(id) != null;
 }
 
 export function isModel(id) {
-  return MODEL_IDS.has(String(id || ""));
+  const row = lookup(id);
+  if (!row) return false;
+  if (row.kind === "guest") return true;
+  return MODEL_IDS.has(row.id);
+}
+
+export function isChef(id) {
+  return String(id || "").toLowerCase() === CHEF;
 }
 
 export function directions(from) {
   if (!isAgent(from)) return [];
-  return AGENT_IDS.filter((id) => id !== from);
+  return rosterIds().filter((id) => id !== from);
 }
 
 export function meshSize() {
-  return AGENT_IDS.length * (AGENT_IDS.length - 1);
+  const n = rosterIds().length;
+  return n * (n - 1);
 }
 
 export function gradesFor(from) {
@@ -70,6 +123,40 @@ export function gradesFor(from) {
   if (from === "github" || from === "carl") out.push("CODE VERIFIED");
   if (from === "carl") out.push("LIVE VERIFIED");
   return out;
+}
+
+export function pathFor(packet) {
+  const mode = String(packet?.mode || "ECHANGE").toLowerCase();
+  const from = String(packet?.from || "grok").toLowerCase();
+  const to = packet?.to === "*" ? "all" : String(packet?.to || "github").toLowerCase();
+  return `flux/${mode}/${from}-to-${to}.md`;
+}
+
+function fail(code, error) {
+  return { ok: false, code, error };
+}
+
+export function connectAgent(spec) {
+  const raw = spec && typeof spec === "object" ? spec : {};
+  const id = String(raw.id || "").toLowerCase().trim();
+  if (!ID_RE.test(id)) return fail("BAD_ID", "id must be [a-z][a-z0-9-]{1,24}");
+  if (RESERVED.has(id)) return fail("RESERVED_ID", `${id} is reserved`);
+  if (AGENTS[id]) return fail("CORE_LOCKED", `${id} is a core seat`);
+  if (GUESTS.has(id)) return fail("ALREADY", `${id} is already connected`);
+  if (GUESTS.size >= GUEST_CAP) return fail("ROSTER_FULL", `at most ${GUEST_CAP} guest AIs`);
+  const name = String(raw.name || id).slice(0, 40);
+  const role = String(raw.role || "guest").slice(0, 40);
+  const row = { id, name, role, kind: "guest" };
+  GUESTS.set(id, row);
+  return { ok: true, agent: row };
+}
+
+export function disconnectAgent(id) {
+  const key = String(id || "").toLowerCase();
+  if (AGENTS[key]) return fail("CORE_LOCKED", `${key} cannot leave`);
+  if (!GUESTS.has(key)) return fail("UNKNOWN_AGENT", `unknown ${key}`);
+  GUESTS.delete(key);
+  return { ok: true, id: key };
 }
 
 function claimsQuantum(text) {
@@ -99,10 +186,6 @@ function claimsDeploy(text, act) {
   return /wrangler\s+deploy/i.test(String(text || ""));
 }
 
-function fail(code, error) {
-  return { ok: false, code, error };
-}
-
 function clipBody(body) {
   return String(body ?? "").slice(0, 8000);
 }
@@ -111,8 +194,22 @@ function newId() {
   return `flux_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function modeOk(mode, from, to) {
+  if (mode === "PROPOSITION" && from !== CHEF) {
+    return fail("MODE_CHEF", "PROPOSITION is Grok chef only");
+  }
+  if (mode === "CONSULTATION") {
+    if (from !== CHEF) return fail("MODE_CHEF", "CONSULTATION is Grok chef only");
+    if (to === "*") return fail("MODE_ONE", "CONSULTATION addresses one AI");
+  }
+  if (mode === "CHALLENGE" && from !== CHEF && to !== CHEF) {
+    return fail("MODE_GROK", "CHALLENGE must include Grok");
+  }
+  return { ok: true };
+}
+
 /**
- * Accept one envelope. Fail-closed. Never mint LIVE on the vitrine.
+ * Accept one envelope. Fail-closed. Chef files it under flux/.
  * @param {unknown} input
  */
 export function accept(input) {
@@ -124,11 +221,13 @@ export function accept(input) {
   const from = String(raw.from || "").toLowerCase();
   const to = String(raw.to || "").toLowerCase();
   const act = String(raw.act || "").toUpperCase();
+  const mode = String(raw.mode || "ECHANGE").toUpperCase();
   const grade = String(raw.grade || "PROPOSED").toUpperCase();
   const body = clipBody(raw.body);
   if (!isAgent(from)) return fail("UNKNOWN_AGENT", `unknown from: ${from || "(empty)"}`);
   if (to !== "*" && !isAgent(to)) return fail("UNKNOWN_AGENT", `unknown to: ${to || "(empty)"}`);
   if (!ACTS.includes(act)) return fail("UNKNOWN_ACT", `unknown act: ${act || "(empty)"}`);
+  if (!MODES.includes(mode)) return fail("UNKNOWN_MODE", `unknown mode: ${mode}`);
   if (!GRADES.includes(grade)) return fail("UNKNOWN_GRADE", `unknown grade: ${grade}`);
   if (!body.trim()) return fail("BODY_MISSING", "body is required");
   if (grade === "LIVE VERIFIED" && from !== "carl") {
@@ -159,61 +258,101 @@ export function accept(input) {
   if (!allowed.includes(grade)) {
     return fail("GRADE_NOT_FOR_AGENT", `${from} cannot claim ${grade}`);
   }
+  const locked = modeOk(mode, from, to);
+  if (!locked.ok) return locked;
 
   const packet = {
     flux: FLUX_VERSION,
     id: String(raw.id || newId()),
     ts: String(raw.ts || new Date().toISOString()),
+    chef: CHEF,
     from,
     to,
     act,
+    mode,
     grade,
     body: body.trim(),
     replyTo: raw.replyTo ? String(raw.replyTo) : null,
+    path: "",
     preview: true,
     receipt: false,
     host: HOST,
   };
+  packet.path = pathFor(packet);
   return { ok: true, packet };
 }
 
 export function fanout(packet) {
   if (!packet || packet.to !== "*") return [packet];
-  return directions(packet.from).map((to) => ({
-    ...packet,
-    id: `${packet.id}_${to}`,
-    to,
-  }));
+  return directions(packet.from).map((to) => {
+    const row = { ...packet, id: `${packet.id}_${to}`, to };
+    row.path = pathFor(row);
+    return row;
+  });
+}
+
+/** Chef files the broadcast itself, then each directed copy. */
+export function filePackets(packet) {
+  if (!packet) return [];
+  if (packet.to !== "*") return [packet];
+  return [packet, ...fanout(packet)];
+}
+
+export function fileTree(packets = []) {
+  const tree = { proposition: [], consultation: [], echange: [], challenge: [] };
+  for (const p of packets) {
+    const key = String(p.mode || "ECHANGE").toLowerCase();
+    if (!tree[key]) tree[key] = [];
+    tree[key].push({
+      path: p.path || pathFor(p),
+      from: p.from,
+      to: p.to,
+      act: p.act,
+    });
+  }
+  return tree;
+}
+
+/**
+ * Chef memory: one markdown file per canal. Later packets on the same path append.
+ * @param {Array<{ path?: string, mode?: string, from?: string, to?: string, act?: string, grade?: string, body?: string }>} packets
+ */
+export function materialize(packets = []) {
+  /** @type {Record<string, string>} */
+  const files = {};
+  for (const p of packets) {
+    const path = p.path || pathFor(p);
+    const block = formatEnvelope(p);
+    files[path] = files[path] ? `${files[path]}\n\n---\n\n${block}` : block;
+  }
+  return files;
 }
 
 /**
  * Parse a GitHub comment into a flux draft (not yet accept()).
- * Accepts:
- *   FLUX from:grok to:chatgpt act:HANDOFF grade:PROPOSED
- *   /flux to:chatgpt from:sonnet
- *   /flux to:*
  */
 export function parseFlux(text = "") {
   const src = String(text || "");
-  const header = src.match(
-    /(?:^|\n)\s*FLUX\s+from:(\w+)\s+to:(\w+|\*)\s+act:(\w+)\s+grade:([^\n]+)/i,
-  );
+  const hasHeader = /(?:^|\n)\s*FLUX\b/i.test(src);
   const hasCmd = /(?:^|\s)\/flux(?=[\s,;:!?.)]|$)/i.test(src);
-  if (!header && !hasCmd) return null;
+  if (!hasHeader && !hasCmd) return null;
 
-  const fromMatch = src.match(/(?:from:|from\s+)(\w+)/i);
-  const toMatch = src.match(/(?:to:|to\s+)(\w+|\*)/i);
-  const actMatch = src.match(/(?:act:|act\s+)(\w+)/i);
-  const gradeMatch = src.match(/(?:grade:\s*)([^\n]+)/i);
+  const kv = {};
+  const re = /(\w+):([^\s]+)/g;
+  let m;
+  while ((m = re.exec(src))) kv[m[1].toLowerCase()] = m[2];
 
-  const from = (header ? header[1] : fromMatch?.[1] || "github").toLowerCase();
-  const to = (header ? header[2] : toMatch?.[1] || "*").toLowerCase();
-  const act = (header ? header[3] : actMatch?.[1] || "HANDOFF").toUpperCase();
-  const grade = (header ? header[4] : gradeMatch?.[1] || "PROPOSED").trim().toUpperCase();
+  const from = String(kv.from || "github").toLowerCase();
+  const to = String(kv.to || "*").toLowerCase();
+  const act = String(kv.act || "HANDOFF").toUpperCase();
+  const mode = String(kv.mode || "ECHANGE").toUpperCase();
+  const grade = String(kv.grade || "PROPOSED").replace(/_/g, " ").toUpperCase();
 
   const stripped = src
-    .replace(/^\s*FLUX\s+from:\w+\s+to:(?:\w+|\*)\s+act:\w+\s+grade:[^\n]+\n?/im, "")
-    .replace(/(?:^|\s)\/flux(?:\s+(?:from|to|act|grade):[^\s]+)*/gi, "")
+    .replace(/^\s*FLUX\b[^\n]*\n?/im, "")
+    .replace(/(?:^|\s)\/flux(?:\s+\S+)*/gi, "")
+    .replace(/^\s*path:\s*\S+\s*$/gim, "")
+    .replace(/^\s*chef:\s*\S+\s*$/gim, "")
     .trim();
 
   return {
@@ -221,6 +360,7 @@ export function parseFlux(text = "") {
     from,
     to,
     act,
+    mode,
     grade,
     body: stripped || src.trim(),
   };
@@ -228,72 +368,74 @@ export function parseFlux(text = "") {
 
 export function formatEnvelope(packet) {
   const p = packet && typeof packet === "object" ? packet : {};
-  const lines = [
-    `FLUX from:${p.from} to:${p.to} act:${p.act} grade:${p.grade}`,
+  const path = p.path || pathFor(p);
+  return [
+    `FLUX from:${p.from} to:${p.to} act:${p.act} mode:${p.mode || "ECHANGE"} grade:${p.grade}`,
+    `path: ${path}`,
+    `chef: ${CHEF}`,
     "",
     String(p.body || "").trim(),
     "",
-    `_flux ${FLUX_VERSION} · preview:true · receipt:false · not LIVE_VERIFIED_`,
-  ];
-  return lines.join("\n");
+    `_flux ${FLUX_VERSION} · chef:${CHEF} · preview:true · receipt:false · not LIVE_VERIFIED_`,
+  ].join("\n");
 }
 
 export function modelsForDestination(to) {
   if (to === "*" || to == null || to === "") {
     return ["sonnet", "chatgpt", "deepseek", "gemini"];
   }
-  if (isModel(to)) return [to];
+  if (isModel(to) && lookup(to)?.kind !== "guest") return [to];
+  if (lookup(to)?.kind === "guest") return [];
   return [];
 }
 
 export const SEED = Object.freeze([
   {
     from: "grok",
-    to: "chatgpt",
+    to: "*",
     act: "HANDOFF",
+    mode: "PROPOSITION",
     grade: "PROPOSED",
-    body: "Challenge the flux mesh. Every agent is addressable in both directions. Worker stays GET /juge. Unique host only.",
+    body: "Grok chef proposes the mesh. Every connected AI may answer. Worker stays GET /juge. Never QUANTUM.",
+  },
+  {
+    from: "grok",
+    to: "chatgpt",
+    act: "FINDING",
+    mode: "CONSULTATION",
+    grade: "PROPOSED",
+    body: "Consult: is GitHub memory enough, or must chef write flux/ files in the repo? Unique host only.",
   },
   {
     from: "chatgpt",
     to: "grok",
     act: "RISK",
+    mode: "CHALLENGE",
     grade: "PROPOSED",
-    body: "A mesh that is not on GitHub is theatre. Keep envelopes in comments. Do not bind /flux on the Worker. Do not declare LIVE.",
+    body: "Challenge: a sandbox mesh is not LIVE. Do not bind /flux on the Worker. Do not wrangler from this packet.",
   },
   {
     from: "sonnet",
-    to: "fable",
-    act: "FINDING",
+    to: "grok",
+    act: "HANDOFF",
+    mode: "ECHANGE",
     grade: "PROPOSED",
-    body: "Swarm today is Action → models → GitHub. Flux adds from/to so a review can answer another review. Fable stays on-demand.",
+    body: "Exchange: Fable stays on-demand. Future AIs connect as guests. Core seats stay locked.",
   },
   {
     from: "cursor",
     to: "ci",
     act: "ACTION",
+    mode: "ECHANGE",
     grade: "PROPOSED",
-    body: "Add test/flux.test.js. Do not replace juge.yml. npm test remains the lock.",
-  },
-  {
-    from: "ci",
-    to: "github",
-    act: "RESULT",
-    grade: "NOT LIVE VERIFIED",
-    body: "Tests speak for a SHA. They do not bind /juge on the vitrine. HTML 404 on GET /juge remains.",
+    body: "Add flux guest + mode tests. Do not replace juge.yml. npm test remains the lock.",
   },
   {
     from: "github",
     to: "carl",
     act: "HANDOFF",
+    mode: "ECHANGE",
     grade: "NOT LIVE VERIFIED",
-    body: "Memory holds PRs #6 #7 #8 #10. Flux is PROPOSED. Merge and wrangler stay yours. No model deploys.",
-  },
-  {
-    from: "worker",
-    to: "grok",
-    act: "EVIDENCE",
-    grade: "PROPOSED",
-    body: "GET /juge physics unchanged: preview true, receipt false, ε split named, calendar day, never QUANTUM.",
+    body: "Chef writes under flux/. Merge and wrangler stay yours. No model deploys.",
   },
 ]);

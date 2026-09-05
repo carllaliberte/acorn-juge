@@ -63,11 +63,11 @@ Fable 5 adaptive thinking is always on; the caller uses `max_tokens: 8192` so te
 
 ## State (2026-09-05)
 
-- `main` HEAD `97231bc` — merge PR #11 (flux mesh v0)
-- CODE VERIFIED on `main` (calendar day + header allowlist + swarm + flux mesh)
-- TEST VERIFIED on HEAD: `npm test` **63/63** after PR #11 (32 Worker + 13 swarm + 18 flux)
-- LIVE: **NOT LIVE VERIFIED**. `GET …/juge` still HTML 404. `*.workers.dev` NXDOMAIN
-- Flux cycle: **PROPOSED**. Four modes always. GitHub first. Heavy and Build always consult. Grok writes under `flux/{mode}/`. 13 core seats. Not a Worker canal. Not LIVE.
+- `main` HEAD `68faab25` — merge PR #12 (flux chef dirs). PR #13 (cycle) closed unmerged.
+- CODE VERIFIED on `main` (calendar day + header allowlist + swarm + flux chef)
+- TEST VERIFIED on HEAD: `npm test` green on `main` after PR #12
+- LIVE: **NOT LIVE VERIFIED**. `GET …/juge` still HTML 404. Wrangler = Carl.
+- Flux four modes always: **PROPOSED** on this branch. `MODES_ALWAYS = true`. Not tabs. GitHub first. Heavy and Build always consult. Grok writes under `flux/{mode}/`. 13 core seats. Not a Worker canal. Not LIVE.
 
 ## Open decisions (Carl)
 

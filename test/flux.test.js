@@ -6,6 +6,7 @@ import {
   AGENTS,
   AGENT_IDS,
   MODES,
+  MODES_ALWAYS,
   GUEST_CAP,
   ALWAYS_CONSULT,
   SUGGESTED_GUESTS,
@@ -60,6 +61,7 @@ describe("mesh", () => {
       "ECHANGE",
       "CHALLENGE",
     ]);
+    assert.equal(MODES_ALWAYS, true);
   });
 
   it("every core pair is connectable both ways", () => {
@@ -273,6 +275,15 @@ describe("guests — future AIs", () => {
 });
 
 describe("cycle — four modes always, all AIs", () => {
+  it("locks MODES_ALWAYS so the four modes cannot be turned off", () => {
+    assert.equal(MODES_ALWAYS, true);
+    const r = cycle({ body: "Four modes always on. Never QUANTUM." });
+    assert.equal(r.ok, true, r.ok ? "" : r.error);
+    const modes = new Set(r.packets.map((p) => p.mode));
+    assert.ok(MODES.every((m) => modes.has(m)));
+    assert.equal(MODES.length, 4);
+  });
+
   it("always consults Heavy and Build, then specialists", () => {
     const ids = consultIds("optimize the flux mesh");
     assert.ok(ids[0] === "heavy" && ids[1] === "build");

@@ -6,6 +6,8 @@ When Carl uses Grok (Heavy or Build), Grok does **not** answer first.
 
 ## Cycle (always)
 
+The four modes cannot be turned off. There is no one-mode path.
+
 1. **GitHub first.** Read this repository: `GROK.md`, `FLUX.md`, `flux/`, `main`.
 2. **Four modes, always, before answering** — for every connected AI Grok decides:
    - **PROPOSITION** — Grok chef proposes (`flux/proposition/`).

@@ -8,6 +8,8 @@ Unique host: `https://acorn-royal-dune-blend.grok.me`
 
 ## Cycle (always)
 
+The four modes cannot be turned off. There is no one-mode path. `MODES_ALWAYS = true`.
+
 1. GitHub first (this repo).
 2. **PROPOSITION** — Grok chef to all connected AIs.
 3. **CONSULTATION** — always Grok Heavy and Grok Build; others by specialty; Grok decides.
@@ -121,6 +123,6 @@ Slash tokens, not path fragments. Missing secret → skip.
 
 ## Handoff
 
-Carl: merge this protocol if you want the cycle and GROK.md on `main`. Secrets still yours. Wrangler still yours.
+Carl: merge this if you want four modes always-on (`MODES_ALWAYS`) on `main`. Secrets still yours. Wrangler still yours. Do not merge unless you want the lock.
 
 ChatGPT: challenge whether a cycle that always consults Heavy and Build, then writes files, is real interoperability — or theatre until those consults actually call a model.

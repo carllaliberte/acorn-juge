@@ -46,6 +46,9 @@ export const MODES = Object.freeze([
   "CHALLENGE",
 ]);
 
+/** Four modes are always on. Not tabs. Not optional. There is no one-mode path. */
+export const MODES_ALWAYS = true;
+
 export const GRADES = Object.freeze([
   "PROPOSED",
   "CODE VERIFIED",

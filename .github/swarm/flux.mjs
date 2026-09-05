@@ -1,26 +1,30 @@
 /**
- * acorn flux v0 — chef mesh.
- * Grok is chef. Grok writes in flux/ directories.
- * Other AIs connect for the future. Not a Worker canal. Not LIVE. Not QUANTUM.
+ * acorn flux v0 — chef mesh. Interoperability system.
+ * Grok is chef. GitHub is memory. Four modes always, for every connected AI.
+ * Heavy and Build always consult. Grok decides specialties, then writes in flux/.
+ * Not a Worker canal. Not LIVE. Not QUANTUM.
  */
 
 export const FLUX_VERSION = "acorn.v0";
 export const CHEF = "grok";
 export const HOST = "https://acorn-royal-dune-blend.grok.me";
 export const GUEST_CAP = 8;
+export const ALWAYS_CONSULT = Object.freeze(["heavy", "build"]);
 
 export const AGENTS = Object.freeze({
-  grok: { id: "grok", name: "Grok", role: "chef", kind: "chef" },
-  chatgpt: { id: "chatgpt", name: "ChatGPT", role: "challenges", kind: "model" },
-  sonnet: { id: "sonnet", name: "Claude Sonnet 5", role: "reviews", kind: "model" },
-  fable: { id: "fable", name: "Claude Fable 5", role: "hard review", kind: "model" },
-  deepseek: { id: "deepseek", name: "DeepSeek", role: "independent", kind: "model" },
-  gemini: { id: "gemini", name: "Gemini", role: "independent", kind: "model" },
-  cursor: { id: "cursor", name: "Cursor", role: "builds", kind: "seat" },
-  ci: { id: "ci", name: "CI", role: "verifies", kind: "seat" },
-  github: { id: "github", name: "GitHub", role: "remembers", kind: "seat" },
-  worker: { id: "worker", name: "GET /juge", role: "preview canal", kind: "seat" },
-  carl: { id: "carl", name: "Carl", role: "judges", kind: "seat" },
+  grok: { id: "grok", name: "Grok", role: "chef", kind: "chef", specialty: "decides · writes" },
+  heavy: { id: "heavy", name: "Grok Heavy", role: "always consult", kind: "consult", specialty: "reason" },
+  build: { id: "build", name: "Grok Build", role: "always consult", kind: "consult", specialty: "implement" },
+  chatgpt: { id: "chatgpt", name: "ChatGPT", role: "challenges", kind: "model", specialty: "challenge" },
+  sonnet: { id: "sonnet", name: "Claude Sonnet 5", role: "reviews", kind: "model", specialty: "review" },
+  fable: { id: "fable", name: "Claude Fable 5", role: "hard review", kind: "model", specialty: "hard review" },
+  deepseek: { id: "deepseek", name: "DeepSeek", role: "independent", kind: "model", specialty: "independent" },
+  gemini: { id: "gemini", name: "Gemini", role: "independent", kind: "model", specialty: "independent" },
+  cursor: { id: "cursor", name: "Cursor", role: "builds", kind: "seat", specialty: "builds" },
+  ci: { id: "ci", name: "CI", role: "verifies", kind: "seat", specialty: "verifies" },
+  github: { id: "github", name: "GitHub", role: "remembers", kind: "seat", specialty: "memory" },
+  worker: { id: "worker", name: "GET /juge", role: "preview canal", kind: "seat", specialty: "preview canal" },
+  carl: { id: "carl", name: "Carl", role: "judges", kind: "seat", specialty: "judges" },
 });
 
 export const AGENT_IDS = Object.freeze(Object.keys(AGENTS));
@@ -42,6 +46,9 @@ export const MODES = Object.freeze([
   "CHALLENGE",
 ]);
 
+/** Four modes are always on. Not tabs. Not optional. There is no one-mode path. */
+export const MODES_ALWAYS = true;
+
 export const GRADES = Object.freeze([
   "PROPOSED",
   "CODE VERIFIED",
@@ -52,14 +59,15 @@ export const GRADES = Object.freeze([
 
 /** Future AIs. Not core. Connect when Carl wants them on the mesh. */
 export const SUGGESTED_GUESTS = Object.freeze([
-  { id: "copilot", name: "GitHub Copilot", role: "guest review" },
-  { id: "llama", name: "Llama", role: "open guest" },
-  { id: "mistral", name: "Mistral", role: "open guest" },
-  { id: "qwen", name: "Qwen", role: "open guest" },
-  { id: "opus", name: "Claude Opus", role: "guest review" },
+  { id: "copilot", name: "GitHub Copilot", role: "guest review", specialty: "guest review" },
+  { id: "llama", name: "Llama", role: "open guest", specialty: "open" },
+  { id: "mistral", name: "Mistral", role: "open guest", specialty: "open" },
+  { id: "qwen", name: "Qwen", role: "open guest", specialty: "open" },
+  { id: "opus", name: "Claude Opus", role: "guest review", specialty: "guest review" },
 ]);
 
 const MODEL_IDS = new Set(["sonnet", "fable", "chatgpt", "deepseek", "gemini"]);
+const AUTO_MODELS = ["chatgpt", "sonnet", "deepseek", "gemini"];
 const RESERVED = new Set([
   "attest",
   "quantum",
@@ -72,7 +80,7 @@ const RESERVED = new Set([
 ]);
 const ID_RE = /^[a-z][a-z0-9-]{1,24}$/;
 
-/** @type {Map<string, { id: string, name: string, role: string, kind: "guest" }>} */
+/** @type {Map<string, { id: string, name: string, role: string, kind: "guest", specialty: string }>} */
 const GUESTS = new Map();
 
 export function resetGuests() {
@@ -105,6 +113,14 @@ export function isModel(id) {
 
 export function isChef(id) {
   return String(id || "").toLowerCase() === CHEF;
+}
+
+export function isAlwaysConsult(id) {
+  return ALWAYS_CONSULT.includes(String(id || "").toLowerCase());
+}
+
+export function specialtyOf(id) {
+  return lookup(id)?.specialty || lookup(id)?.role || "";
 }
 
 export function directions(from) {
@@ -146,7 +162,8 @@ export function connectAgent(spec) {
   if (GUESTS.size >= GUEST_CAP) return fail("ROSTER_FULL", `at most ${GUEST_CAP} guest AIs`);
   const name = String(raw.name || id).slice(0, 40);
   const role = String(raw.role || "guest").slice(0, 40);
-  const row = { id, name, role, kind: "guest" };
+  const specialty = String(raw.specialty || role).slice(0, 40);
+  const row = { id, name, role, kind: "guest", specialty };
   GUESTS.set(id, row);
   return { ok: true, agent: row };
 }
@@ -329,6 +346,119 @@ export function materialize(packets = []) {
 }
 
 /**
+ * Grok decides who to consult. Heavy and Build always. Other AIs by specialty.
+ * Fable stays on-demand. Connected guests join. Seats only when the topic names them.
+ */
+export function decideSpecialists(topic = "") {
+  const t = String(topic || "").toLowerCase();
+  const hits = [];
+  if (/challenge|refute|risk|adversar/.test(t)) hits.push("chatgpt");
+  if (/review|docs/.test(t)) hits.push("sonnet");
+  if (/\bfable\b|hard review/.test(t)) hits.push("fable");
+  if (/independ|second opinion/.test(t)) hits.push("deepseek", "gemini");
+  if (/cursor|implement code|repo patch/.test(t)) hits.push("cursor");
+  if (/\bci\b|verify|juge\.yml/.test(t)) hits.push("ci");
+  if (/memory|github|pull request/.test(t)) hits.push("github");
+  if (/\/juge|worker|canal/.test(t)) hits.push("worker");
+  if (/\bcarl\b|judge|merge|live verified/.test(t)) hits.push("carl");
+  if (hits.length === 0) hits.push(...AUTO_MODELS);
+  for (const g of GUESTS.values()) hits.push(g.id);
+  const seen = new Set();
+  const out = [];
+  for (const id of hits) {
+    if (id === CHEF || seen.has(id) || !isAgent(id)) continue;
+    seen.add(id);
+    out.push(id);
+  }
+  return out;
+}
+
+/** Always Heavy + Build, then Grok-decided specialists. */
+export function consultIds(topic = "") {
+  const ids = [];
+  for (const id of ALWAYS_CONSULT) {
+    if (isAgent(id) && !ids.includes(id)) ids.push(id);
+  }
+  for (const id of decideSpecialists(topic)) {
+    if (!ids.includes(id)) ids.push(id);
+  }
+  return ids;
+}
+
+function clipTopic(topic) {
+  return String(topic || "").trim().slice(0, 400);
+}
+
+/**
+ * Interoperability cycle. GitHub first. Then the four modes, always, for all AIs Grok decides.
+ * Heavy and Build always consult. Fail-closed via accept().
+ */
+export function cycle(input) {
+  const raw = input && typeof input === "object" ? input : { body: input };
+  const topic = clipTopic(raw.body || raw.topic);
+  if (!topic) return fail("BODY_MISSING", "cycle needs a question");
+  const consult = consultIds(topic);
+  const never = " Never QUANTUM. Unique host only.";
+  const drafts = [
+    {
+      from: "github",
+      to: CHEF,
+      act: "EVIDENCE",
+      mode: "ECHANGE",
+      grade: "NOT LIVE VERIFIED",
+      body: `GitHub memory first. carllaliberte/acorn-juge. Topic: ${topic}.${never}`,
+    },
+    {
+      from: CHEF,
+      to: "*",
+      act: "HANDOFF",
+      mode: "PROPOSITION",
+      grade: "PROPOSED",
+      body: `Grok chef proposes to every connected AI. ${topic} Heavy and Build always consult. Grok decides specialties.${never}`,
+    },
+  ];
+  for (const id of consult) {
+    drafts.push({
+      from: CHEF,
+      to: id,
+      act: "FINDING",
+      mode: "CONSULTATION",
+      grade: "PROPOSED",
+      body: `Consult ${lookup(id)?.name || id} (${specialtyOf(id)}). ${topic} Do not declare LIVE.${never}`,
+    });
+  }
+  const a = consult[0];
+  const b = consult[1] || AUTO_MODELS.find((id) => id !== a);
+  if (a && b && a !== b) {
+    drafts.push({
+      from: a,
+      to: b,
+      act: "HANDOFF",
+      mode: "ECHANGE",
+      grade: "PROPOSED",
+      body: `Exchange. ${specialtyOf(a)} with ${specialtyOf(b)}. ${topic}.${never}`,
+    });
+  }
+  const challenger = consult.includes("chatgpt") ? "chatgpt" : consult.find((id) => isModel(id)) || "chatgpt";
+  drafts.push({
+    from: challenger,
+    to: CHEF,
+    act: "RISK",
+    mode: "CHALLENGE",
+    grade: "PROPOSED",
+    body: `Challenge Grok. ${topic} Do not bind /flux on the Worker. Do not wrangler.${never}`,
+  });
+
+  const packets = [];
+  for (const d of drafts) {
+    const r = accept(d);
+    if (!r.ok) return r;
+    packets.push(...filePackets(r.packet));
+  }
+  return { ok: true, consult, packets };
+}
+
+/**
  * Parse a GitHub comment into a flux draft (not yet accept()).
  */
 export function parseFlux(text = "") {
@@ -391,51 +521,103 @@ export function modelsForDestination(to) {
 
 export const SEED = Object.freeze([
   {
+    id: "seed_github_to_grok",
+    ts: "2026-09-05T12:00:00.000Z",
+    from: "github",
+    to: "grok",
+    act: "EVIDENCE",
+    mode: "ECHANGE",
+    grade: "NOT LIVE VERIFIED",
+    body: "GitHub memory first. carllaliberte/acorn-juge. Four modes always. Never QUANTUM.",
+  },
+  {
+    id: "seed_grok_to_all",
+    ts: "2026-09-05T12:00:01.000Z",
     from: "grok",
     to: "*",
     act: "HANDOFF",
     mode: "PROPOSITION",
     grade: "PROPOSED",
-    body: "Grok chef proposes the mesh. Every connected AI may answer. Worker stays GET /juge. Never QUANTUM.",
+    body: "Grok chef proposes the mesh. Every connected AI may answer. Heavy and Build always consult. Worker stays GET /juge. Never QUANTUM.",
   },
   {
+    id: "seed_grok_to_heavy",
+    ts: "2026-09-05T12:00:02.000Z",
+    from: "grok",
+    to: "heavy",
+    act: "FINDING",
+    mode: "CONSULTATION",
+    grade: "PROPOSED",
+    body: "Consult Heavy. Reason the four-mode cycle. Do not declare LIVE. Never QUANTUM.",
+  },
+  {
+    id: "seed_grok_to_build",
+    ts: "2026-09-05T12:00:03.000Z",
+    from: "grok",
+    to: "build",
+    act: "FINDING",
+    mode: "CONSULTATION",
+    grade: "PROPOSED",
+    body: "Consult Build. Implement the cycle. Do not declare LIVE. Never QUANTUM.",
+  },
+  {
+    id: "seed_grok_to_chatgpt",
+    ts: "2026-09-05T12:00:04.000Z",
     from: "grok",
     to: "chatgpt",
     act: "FINDING",
     mode: "CONSULTATION",
     grade: "PROPOSED",
-    body: "Consult: is GitHub memory enough, or must chef write flux/ files in the repo? Unique host only.",
+    body: "Consult: is GitHub memory enough, or must chef write flux/ files in the repo? Unique host only. Never QUANTUM.",
   },
   {
+    id: "seed_chatgpt_to_grok",
+    ts: "2026-09-05T12:00:05.000Z",
     from: "chatgpt",
     to: "grok",
     act: "RISK",
     mode: "CHALLENGE",
     grade: "PROPOSED",
-    body: "Challenge: a sandbox mesh is not LIVE. Do not bind /flux on the Worker. Do not wrangler from this packet.",
+    body: "Challenge: a sandbox mesh is not LIVE. Do not bind /flux on the Worker. Do not wrangler from this packet. Never QUANTUM.",
   },
   {
+    id: "seed_heavy_to_build",
+    ts: "2026-09-05T12:00:06.000Z",
+    from: "heavy",
+    to: "build",
+    act: "HANDOFF",
+    mode: "ECHANGE",
+    grade: "PROPOSED",
+    body: "Exchange: reason then implement. Four modes always. Unique host only. Never QUANTUM.",
+  },
+  {
+    id: "seed_sonnet_to_grok",
+    ts: "2026-09-05T12:00:07.000Z",
     from: "sonnet",
     to: "grok",
     act: "HANDOFF",
     mode: "ECHANGE",
     grade: "PROPOSED",
-    body: "Exchange: Fable stays on-demand. Future AIs connect as guests. Core seats stay locked.",
+    body: "Exchange: Fable stays on-demand. Future AIs connect as guests. Core seats stay locked. Never QUANTUM.",
   },
   {
+    id: "seed_cursor_to_ci",
+    ts: "2026-09-05T12:00:08.000Z",
     from: "cursor",
     to: "ci",
     act: "ACTION",
     mode: "ECHANGE",
     grade: "PROPOSED",
-    body: "Add flux guest + mode tests. Do not replace juge.yml. npm test remains the lock.",
+    body: "Add flux cycle + always-consult tests. Do not replace juge.yml. npm test remains the lock. Never QUANTUM.",
   },
   {
+    id: "seed_github_to_carl",
+    ts: "2026-09-05T12:00:09.000Z",
     from: "github",
     to: "carl",
     act: "HANDOFF",
     mode: "ECHANGE",
     grade: "NOT LIVE VERIFIED",
-    body: "Chef writes under flux/. Merge and wrangler stay yours. No model deploys.",
+    body: "Chef writes under flux/. Merge and wrangler stay yours. No model deploys. Never QUANTUM.",
   },
 ]);

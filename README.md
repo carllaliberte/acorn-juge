@@ -54,10 +54,14 @@ No secret → that model skips (fail-closed). Prompt: `.github/swarm/prompt.md`.
 
 ## Flux (PROPOSED — not a Worker canal)
 
-Grok is chef. Grok writes under `flux/{mode}/{from}-to-{to}.md`.
+Grok is chef. GitHub first. Four modes always, for every connected AI.
+Heavy and Build always consult. Grok decides specialties, then writes under `flux/{mode}/{from}-to-{to}.md`.
+
 Modes: Proposition, Consultation, Échanges, Challenge.
 Future AIs connect as guests (max 8). Core seats stay locked.
-Mesh of 11 core agents, 110 directed canals, plus guests.
+Mesh of 13 core agents (Grok + Heavy + Build + 10), 156 directed canals, plus guests.
+
+See [GROK.md](GROK.md) for the operating cycle.
 
 ```
 /flux to:chatgpt from:grok mode:CONSULTATION

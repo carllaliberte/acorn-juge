@@ -23,7 +23,9 @@ quelle + temoin + epsilon + horizon  →  GET /juge  →  JSON preview
 | `quelle` | Where did the bits come from? | `os` · `qrng` · `qkd` |
 | `temoin` | With what force? | `aucun` · `stat` · `fabricant` · `di` |
 | `epsilon` | What error margin? | a number **> 0** |
-| `horizon` | Until which calendar day? | `YYYY-MM-DD` |
+| `horizon` | Until which real calendar day? | Gregorian day that exists (`YYYY-MM-DD`). Syntax is not enough: `2027-02-31` → 400. Leap `2028-02-29` is a day. |
+
+Worker `isCalendarDay` is **stricter** than famille [`juge.v0.json`](https://github.com/carllaliberte/famille/blob/main/schema/juge.v0.json) `horizon.pattern` (regex `YYYY-MM-DD` only). Écart documented, not hidden. Do not unwind the schema from this canal.
 
 `os` is phone entropy. That is classique. Correct.
 `ε = 0` is a lie. `UFHY1` is a suite name, not a date.

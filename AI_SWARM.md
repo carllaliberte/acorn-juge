@@ -38,10 +38,11 @@ FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF
 
 ## Swarm wiring
 
-Workflow: `.github/workflows/swarm.yml` → `.github/swarm/review.mjs`
-Prompt: `.github/swarm/prompt.md`
+Architecture: GitHub Action `.github/workflows/swarm.yml` → `.github/swarm/review.mjs` → Anthropic / OpenAI / DeepSeek / Gemini. Prompt: `.github/swarm/prompt.md`. Comments only.
 
 Comments on a PR: `/swarm` `/sonnet` `/fable` `/fabre` `/chatgpt` `/deepseek` `/gemini`
+
+Commands are **slash tokens** at the start of a word (`/fable`), not path fragments (`.github/swarm/prompt.md` is not `/swarm`). `labeled` only runs Fable when the added label is `fable` / `fabre`. An `issue_comment` without a token does not default to auto.
 
 Carl secrets (Actions, never in git):
 
@@ -54,17 +55,20 @@ Carl secrets (Actions, never in git):
 
 Missing secret → skip that model (fail-closed). Job is `continue-on-error`. Fork PRs have no secrets.
 
+Fable 5 adaptive thinking is always on; the caller uses `max_tokens: 8192` so text is not eaten by thinking.
+
 ## State (2026-09-05)
 
 - `main` HEAD `6b1abfb` — merge PR #7 (docs) on PR #8 (proxy allowlist)
 - CODE VERIFIED on `main` (calendar day + header allowlist)
 - TEST VERIFIED on HEAD: `npm test` **32/32** before swarm PR
 - LIVE: **NOT LIVE VERIFIED**. `GET …/juge` still HTML 404. `*.workers.dev` NXDOMAIN
-- Swarm: PROPOSED on a PR. Not LIVE. Not a second host.
+- Swarm: PROPOSED on PR #10. Not LIVE. Not a second host.
 
 ## Open decisions (Carl)
 
 - Add the four Actions secrets (or a subset)
 - When to `wrangler deploy` and bind `/juge` on the cited host
 - Whether Worker missing-ε 400 and famille sdk classique should ever collapse (default: **no**)
+- Pin Fable 5 (`claude-fable-5`, this PR, as requested) vs Fable 5.1 (`claude-fable-5-1`). Not auto-upgraded.
 - No bot deploys. No second `*.grok.me`.

@@ -36,8 +36,10 @@ They are not the judge. Judgment = Carl.
 
 ## Swarm (complementary, not a judge)
 
-GitHub Action `.github/workflows/swarm.yml` can comment on pull requests.
+GitHub Action `.github/workflows/swarm.yml` comments on pull requests.
 It does **not** replace `npm test`. It does not merge. It does not wrangler.
+
+Architecture: Action → `.github/swarm/review.mjs` → Anthropic / OpenAI / DeepSeek / Gemini. Missing secret skips.
 
 | Model | API id | When |
 |---|---|---|
@@ -47,7 +49,7 @@ It does **not** replace `npm test`. It does not merge. It does not wrangler.
 | DeepSeek | `deepseek-v4-flash` | every PR if `DEEPSEEK_API_KEY` |
 | Gemini | `gemini-3.8-flash` | every PR if `GEMINI_API_KEY` |
 
-Carl adds those secrets under repo Settings → Secrets → Actions.
+Commands are slash tokens (`/fable`), not path fragments. Carl adds those secrets under repo Settings → Secrets → Actions.
 No secret → that model skips (fail-closed). Prompt: `.github/swarm/prompt.md`.
 
 CORS on JSON `/juge` and OPTIONS is allowlisted (vitrine + this Worker’s own `*.workers.dev` host), not `*`. Carl can widen later.

@@ -5,3 +5,13 @@ chef: grok
 Consult Build. Implement the cycle. Do not declare LIVE. Never QUANTUM.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:build act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-build.md
+chef: grok
+
+Consult Build (implement). Clarify the mode correction in the preview. Modes must not look like selectable tabs. Show the lock: who speaks, who is addressed, Write = cycle() only. Do not declare LIVE. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

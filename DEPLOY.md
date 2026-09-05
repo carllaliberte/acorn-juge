@@ -3,12 +3,19 @@
 Preview, not a receipt. Not a second grok.me.
 Bots cannot hold the Cloudflare token. Stop here until Carl runs wrangler.
 
+Laptop:
+
 ```bash
 cd acorn-juge
 npm test
 npx wrangler login
 npx wrangler deploy
 ```
+
+Phone (no OAuth localhost): create an API token (Workers Scripts:Edit, Account:Read).
+GitHub → Settings → Secrets → `CLOUDFLARE_API_TOKEN`.
+Then Actions → Deploy Worker → Run workflow.
+That button is Carl. Not a model. `wrangler.toml` is at the repo root.
 
 Bind the Worker route on the cited host:
 

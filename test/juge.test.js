@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handle, lireEpsilon, ORIGIN, PHRASE } from "../worker.js";
+import { handle, lireEpsilon, isCalendarDay, ORIGIN, PHRASE } from "../worker.js";
 
 const TODAY = "2026-09-03";
 const HOST = "https://acorn-juge.example";
@@ -16,6 +16,24 @@ async function call(path, init = {}) {
 async function body(res) {
   return res.json();
 }
+
+describe("isCalendarDay", () => {
+  it("rejects syntax-valid impossible days", () => {
+    assert.equal(isCalendarDay("2027-02-31"), false);
+    assert.equal(isCalendarDay("2026-11-31"), false);
+    assert.equal(isCalendarDay("2027-02-29"), false);
+    assert.equal(isCalendarDay("2026-13-01"), false);
+    assert.equal(isCalendarDay("2027-00-10"), false);
+    assert.equal(isCalendarDay("2027-01-32"), false);
+    assert.equal(isCalendarDay("UFHY1"), false);
+  });
+
+  it("accepts real days including leap 2028-02-29", () => {
+    assert.equal(isCalendarDay("2027-12-31"), true);
+    assert.equal(isCalendarDay("2028-02-29"), true);
+    assert.equal(isCalendarDay("2026-09-03"), true);
+  });
+});
 
 describe("lireEpsilon", () => {
   it("names missing and empty as missing, not lie", () => {
@@ -131,6 +149,37 @@ describe("GET /juge — preview, not a seal", () => {
     const j = await body(res);
     assert.equal(res.status, 400);
     assert.equal(j.error, "horizon");
+  });
+
+  it("400 horizon on impossible calendar days that match YYYY-MM-DD", async () => {
+    for (const horizon of [
+      "2027-02-31",
+      "2026-11-31",
+      "2027-04-31",
+      "2027-02-29",
+      "2026-13-01",
+      "2027-00-10",
+      "2027-01-00",
+    ]) {
+      const res = await call(
+        `/juge?quelle=os&temoin=aucun&epsilon=1e-6&horizon=${horizon}`,
+      );
+      const j = await body(res);
+      assert.equal(res.status, 400, horizon);
+      assert.equal(j.error, "horizon", horizon);
+      assert.equal(j.preview, true, horizon);
+    }
+  });
+
+  it("200 on a real leap day after today", async () => {
+    const res = await call(
+      "/juge?quelle=os&temoin=aucun&epsilon=1e-6&horizon=2028-02-29",
+    );
+    const j = await body(res);
+    assert.equal(res.status, 200);
+    assert.equal(j.horizon, "2028-02-29");
+    assert.equal(j.preview, true);
+    assert.equal(j.receipt, false);
   });
 
   it("400 transcript when di has no transcript", async () => {

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   MODELS,
+  commandsIn,
   parseTrigger,
   keyedModels,
   loadPrompt,
@@ -19,6 +20,8 @@ describe("swarm roster", () => {
     assert.equal(MODELS.gemini.model, "gemini-3.8-flash");
     assert.equal(MODELS.fable.auto, false);
     assert.equal(MODELS.sonnet.auto, true);
+    assert.equal(MODELS.fable.maxTokens, 8192);
+    assert.ok(MODELS.fable.maxTokens > MODELS.sonnet.maxTokens);
   });
 });
 
@@ -46,6 +49,27 @@ describe("parseTrigger", () => {
       "deepseek",
       "gemini",
     ]);
+  });
+
+  it("does not treat .github/swarm paths as /swarm", () => {
+    assert.deepEqual(commandsIn("see .github/swarm/prompt.md"), []);
+    assert.deepEqual(commandsIn("https://example.com/swarm.yml"), []);
+    assert.deepEqual(
+      parseTrigger("see .github/swarm/prompt.md", [], "issue_comment"),
+      [],
+    );
+  });
+
+  it("labeled non-fable does not auto-run; labeled fable is Fable only", () => {
+    assert.deepEqual(parseTrigger("", [], "pull_request", "labeled", "docs"), []);
+    assert.deepEqual(
+      parseTrigger("", [], "pull_request", "labeled", "fable"),
+      ["fable"],
+    );
+  });
+
+  it("issue_comment without a slash token does not default to auto", () => {
+    assert.deepEqual(parseTrigger("looks good", [], "issue_comment"), []);
   });
 });
 

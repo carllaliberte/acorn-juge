@@ -16,6 +16,7 @@ Factual coordination memory. Not a seal. Not LIVE VERIFIED.
 | Cursor | Implementation on rails |
 | CI (`juge.yml`) | `npm test` on push/PR — the lock |
 | CI (`swarm.yml`) | Complementary comments. `continue-on-error`. Does not replace tests. |
+| Flux (`acorn.v0`) | Mesh addressing. GitHub memory. Not a Worker canal. PROPOSED. |
 
 None of the models merge, deploy, or declare LIVE.
 
@@ -31,6 +32,7 @@ None of the models merge, deploy, or declare LIVE.
 - CODE VERIFIED ≠ TEST VERIFIED ≠ LIVE VERIFIED
 - Worker horizon ⊃ famille schema: `isCalendarDay` (real Gregorian day). `juge.v0.json` `horizon.pattern` is regex `YYYY-MM-DD` only. Document the écart; do not hide it; do not unwind the schema from this canal.
 - GET `/` proxy allowlists `accept` + `accept-language` only.
+- Flux is not a Worker route. Do not add `/flux` to `worker.js`. Do not invent a second host.
 
 ## Format
 
@@ -59,11 +61,11 @@ Fable 5 adaptive thinking is always on; the caller uses `max_tokens: 8192` so te
 
 ## State (2026-09-05)
 
-- `main` HEAD `6b1abfb` — merge PR #7 (docs) on PR #8 (proxy allowlist)
-- CODE VERIFIED on `main` (calendar day + header allowlist)
-- TEST VERIFIED on HEAD: `npm test` **32/32** before swarm PR
+- `main` HEAD `0ae36bc` — merge PR #10 (swarm reviewers)
+- CODE VERIFIED on `main` (calendar day + header allowlist + swarm wiring)
+- TEST VERIFIED on HEAD: `npm test` **45/45** before this flux PR (32 Worker + 13 swarm)
 - LIVE: **NOT LIVE VERIFIED**. `GET …/juge` still HTML 404. `*.workers.dev` NXDOMAIN
-- Swarm: PROPOSED on PR #10. Not LIVE. Not a second host.
+- Flux: **PROPOSED**. Mesh 11 × 10 = 110 directed canals. Envelope in `.github/swarm/flux.mjs`. Not a Worker canal. Not LIVE.
 
 ## Open decisions (Carl)
 

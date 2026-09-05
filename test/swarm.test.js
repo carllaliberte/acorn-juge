@@ -9,6 +9,8 @@ import {
   buildUserMessage,
   sanitizeReview,
   formatComment,
+  idsForComment,
+  addressResult,
 } from "../.github/swarm/review.mjs";
 
 describe("swarm roster", () => {
@@ -73,6 +75,39 @@ describe("parseTrigger", () => {
   });
 });
 
+describe("flux addressing on comments", () => {
+  it("routes /flux to:chatgpt to ChatGPT only", () => {
+    const r = idsForComment("/flux to:chatgpt from:grok", [], "issue_comment");
+    assert.equal(r.flux.from, "grok");
+    assert.equal(r.flux.to, "chatgpt");
+    assert.deepEqual(r.ids, ["chatgpt"]);
+  });
+
+  it("broadcast /flux to:* is auto models, not Fable", () => {
+    const r = idsForComment("/flux to:*", [], "issue_comment");
+    assert.deepEqual(r.ids, ["sonnet", "chatgpt", "deepseek", "gemini"]);
+  });
+
+  it("to:carl stores envelope and calls no model", () => {
+    const r = idsForComment(
+      "FLUX from:grok to:carl act:HANDOFF grade:PROPOSED\nYour merge.",
+      [],
+      "issue_comment",
+    );
+    assert.equal(r.flux.to, "carl");
+    assert.deepEqual(r.ids, []);
+  });
+
+  it("wraps a model FINDING as a flux envelope back to the speaker", () => {
+    const out = addressResult(
+      { id: "chatgpt", label: "ChatGPT", model: "gpt-5.6-terra", text: "Do not bind /flux on the Worker. Never QUANTUM." },
+      "grok",
+    );
+    assert.match(out.text, /^FLUX from:chatgpt to:grok act:FINDING grade:PROPOSED/m);
+    assert.match(out.text, /preview:true/);
+  });
+});
+
 describe("keyedModels fail-closed", () => {
   it("skips every model when secrets are absent", () => {
     const { run, skip } = keyedModels(
@@ -109,6 +144,7 @@ describe("prompt locks", () => {
     assert.match(p, /isCalendarDay/);
     assert.match(p, /do not create `POST \/attest`/i);
     assert.match(p, /CORS never/);
+    assert.match(p, /Flux is \*\*not\*\* a Worker canal/);
   });
 });
 

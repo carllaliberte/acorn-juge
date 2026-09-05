@@ -40,6 +40,22 @@ CODE ≠ TEST ≠ LIVE. HTML 404 on `/juge` is not a Worker receipt.
 4. If the diff is docs-only, say so. Do not demand Worker changes.
 5. Never approve merge. Never say LIVE. Never say QUANTUM.
 
+## Flux addressing
+
+Comments may address a peer, all directions:
+
+```
+FLUX from:sonnet to:chatgpt act:HANDOFF grade:PROPOSED
+```
+
+or `/flux to:chatgpt from:sonnet`. `/flux to:*` broadcasts to auto models.
+
+Named agents: grok, chatgpt, sonnet, fable, deepseek, gemini, cursor, ci, github, worker, carl.
+
+If you are the `to`, answer that agent. You may hand off to any other. GitHub remembers the envelope.
+
+Flux is **not** a Worker canal. Do not bind `/flux` on GET `/juge`. Do not invent a second `*.grok.me`.
+
 ## Output
 
 Markdown. Short. No emoji. No seal language.

@@ -7,6 +7,12 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  accept as acceptFlux,
+  formatEnvelope,
+  modelsForDestination,
+  parseFlux,
+} from "./flux.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PROMPT_PATH = join(HERE, "prompt.md");
@@ -117,6 +123,35 @@ export function parseTrigger(
   if (action === "labeled") return [];
   if (event === "issue_comment") return [];
   return autoIds();
+}
+
+/** Flux addressing takes precedence. /flux to:chatgpt runs ChatGPT only. */
+export function idsForComment(
+  commentBody = "",
+  labels = [],
+  event = "pull_request",
+  action = "",
+  addedLabel = "",
+) {
+  const flux = parseFlux(commentBody);
+  if (flux) return { flux, ids: modelsForDestination(flux.to) };
+  return {
+    flux: null,
+    ids: parseTrigger(commentBody, labels, event, action, addedLabel),
+  };
+}
+
+export function addressResult(result, to = "github") {
+  if (!result || result.skipped || result.error || !result.text) return result;
+  const r = acceptFlux({
+    from: result.id,
+    to,
+    act: "FINDING",
+    grade: "PROPOSED",
+    body: result.text,
+  });
+  if (!r.ok) return { ...result, text: sanitizeReview(result.text) };
+  return { ...result, text: formatEnvelope(r.packet) };
 }
 
 export function keyedModels(ids, env = process.env) {
@@ -362,14 +397,33 @@ export async function main(env = process.env) {
   const repo = env.GITHUB_REPOSITORY; // owner/name
   const pr = prNumberFromEvent(env);
   const meta = eventMeta(env);
-  const ids = parseTrigger(
+  const routed = idsForComment(
     meta.comment,
     meta.labels,
     meta.event,
     meta.action,
     meta.label,
   );
+  const ids = routed.ids;
   if (!ids.length) {
+    if (routed.flux) {
+      const accepted = acceptFlux(routed.flux);
+      const body = accepted.ok
+        ? formatEnvelope(accepted.packet)
+        : `FLUX refused: ${accepted.code} — ${accepted.error}`;
+      if (token && repo && pr) {
+        const [owner, name] = repo.split("/");
+        await gh(`/repos/${owner}/${name}/issues/${pr}/comments`, {
+          method: "POST",
+          token,
+          body: { body },
+        });
+      } else {
+        console.log(body);
+      }
+      console.log("flux stored (no model destination)");
+      return 0;
+    }
     console.log("swarm skip (no trigger)");
     return 0;
   }
@@ -409,10 +463,17 @@ export async function main(env = process.env) {
   }
 
   const system = loadPrompt();
-  const user = buildUserMessage({ title, body, diff, files });
+  let user = buildUserMessage({ title, body, diff, files });
+  if (routed.flux) {
+    user =
+      `You are addressed on the flux mesh as ${routed.flux.to} by ${routed.flux.from} (${routed.flux.act}, ${routed.flux.grade}). Reply in FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF. You may address any named agent. Do not declare LIVE. Do not say QUANTUM. Do not wrangler deploy. Flux is not a Worker canal.\n\n` +
+      user;
+  }
+  const dest = routed.flux?.from || "github";
   const results = [];
   for (const spec of run) {
-    results.push(await reviewOne(spec, system, user, env));
+    const one = await reviewOne(spec, system, user, env);
+    results.push(routed.flux ? addressResult(one, dest) : one);
   }
   const text = formatComment({ run, skip, results });
   if (token && repo && pr) {

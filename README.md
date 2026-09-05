@@ -52,6 +52,19 @@ Architecture: Action → `.github/swarm/review.mjs` → Anthropic / OpenAI / Dee
 Commands are slash tokens (`/fable`), not path fragments. Carl adds those secrets under repo Settings → Secrets → Actions.
 No secret → that model skips (fail-closed). Prompt: `.github/swarm/prompt.md`.
 
+## Flux (PROPOSED — not a Worker canal)
+
+Mesh of 11 agents, 110 directed canals. Any agent may address any other,
+including `to:*`. GitHub comments are memory.
+
+```
+/flux to:chatgpt from:grok
+FLUX from:sonnet to:chatgpt act:HANDOFF grade:PROPOSED
+```
+
+Code: `.github/swarm/flux.mjs`. Spec: [FLUX.md](FLUX.md). Do **not** bind `/flux`
+on the Worker. Unique host unchanged. Not LIVE VERIFIED.
+
 CORS on JSON `/juge` and OPTIONS is allowlisted (vitrine + this Worker’s own `*.workers.dev` host), not `*`. Carl can widen later.
 
 ## Missing ε — FLAG, not a seal

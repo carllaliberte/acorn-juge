@@ -7,6 +7,7 @@ import {
   AGENT_IDS,
   MODES,
   GUEST_CAP,
+  ALWAYS_CONSULT,
   SUGGESTED_GUESTS,
   meshSize,
   directions,
@@ -26,23 +27,33 @@ import {
   filePackets,
   materialize,
   isChef,
+  isAlwaysConsult,
+  specialtyOf,
+  consultIds,
+  cycle,
 } from "../.github/swarm/flux.mjs";
 
 beforeEach(() => resetGuests());
 
 describe("mesh", () => {
-  it("names eleven core agents, Grok chef, 110 directed edges", () => {
-    assert.equal(AGENT_IDS.length, 11);
+  it("names thirteen core agents, Grok chef, Heavy and Build always consult", () => {
+    assert.equal(AGENT_IDS.length, 13);
     assert.equal(CHEF, "grok");
     assert.equal(isChef("grok"), true);
     assert.equal(AGENTS.grok.kind, "chef");
-    assert.equal(meshSize(), 110);
-    assert.equal(directions("grok").length, 10);
+    assert.deepEqual([...ALWAYS_CONSULT], ["heavy", "build"]);
+    assert.equal(isAlwaysConsult("heavy"), true);
+    assert.equal(isAlwaysConsult("build"), true);
+    assert.equal(AGENTS.heavy.kind, "consult");
+    assert.equal(AGENTS.build.kind, "consult");
+    assert.equal(meshSize(), 13 * 12);
+    assert.equal(directions("grok").length, 12);
     assert.ok(!directions("grok").includes("grok"));
     assert.ok(AGENTS.carl.role.includes("judge"));
     assert.ok(SEED.length >= 6);
     assert.equal(GUEST_CAP, 8);
     assert.ok(SUGGESTED_GUESTS.some((g) => g.id === "copilot"));
+    assert.equal(specialtyOf("chatgpt"), "challenge");
     assert.deepEqual([...MODES], [
       "PROPOSITION",
       "CONSULTATION",
@@ -231,7 +242,7 @@ describe("guests — future AIs", () => {
     const c = connectAgent({ id: "copilot", name: "Copilot", role: "guest review" });
     assert.equal(c.ok, true);
     assert.ok(rosterIds().includes("copilot"));
-    assert.equal(meshSize(), 12 * 11);
+    assert.equal(meshSize(), 14 * 13);
     const r = accept({
       from: "copilot",
       to: "grok",
@@ -249,14 +260,51 @@ describe("guests — future AIs", () => {
       const r = connectAgent(g);
       assert.equal(r.ok, true, g.id);
     }
-    assert.equal(meshSize(), (11 + SUGGESTED_GUESTS.length) * (10 + SUGGESTED_GUESTS.length));
+    assert.equal(meshSize(), (13 + SUGGESTED_GUESTS.length) * (12 + SUGGESTED_GUESTS.length));
   });
 
   it("refuses reserved ids and core seats", () => {
     assert.equal(connectAgent({ id: "attest" }).code, "RESERVED_ID");
     assert.equal(connectAgent({ id: "quantum" }).code, "RESERVED_ID");
     assert.equal(connectAgent({ id: "grok" }).code, "CORE_LOCKED");
+    assert.equal(connectAgent({ id: "heavy" }).code, "CORE_LOCKED");
     assert.equal(disconnectAgent("carl").code, "CORE_LOCKED");
+  });
+});
+
+describe("cycle — four modes always, all AIs", () => {
+  it("always consults Heavy and Build, then specialists", () => {
+    const ids = consultIds("optimize the flux mesh");
+    assert.ok(ids[0] === "heavy" && ids[1] === "build");
+    assert.ok(ids.includes("chatgpt"));
+    assert.ok(ids.includes("sonnet"));
+    assert.ok(!ids.includes("fable"));
+  });
+
+  it("GitHub first, then all four modes, files under flux/", () => {
+    const r = cycle({
+      body: "Activate four modes for all AIs. Never QUANTUM.",
+    });
+    assert.equal(r.ok, true, r.ok ? "" : r.error);
+    assert.ok(r.consult.includes("heavy"));
+    assert.ok(r.consult.includes("build"));
+    const modes = new Set(r.packets.map((p) => p.mode));
+    assert.ok(MODES.every((m) => modes.has(m)));
+    assert.equal(r.packets[0].from, "github");
+    assert.equal(r.packets[0].to, "grok");
+    assert.ok(r.packets.some((p) => p.path === "flux/consultation/grok-to-heavy.md"));
+    assert.ok(r.packets.some((p) => p.path === "flux/consultation/grok-to-build.md"));
+    assert.ok(r.packets.some((p) => p.path === "flux/proposition/grok-to-all.md"));
+    assert.ok(r.packets.some((p) => p.path === "flux/challenge/chatgpt-to-grok.md"));
+    assert.ok(r.packets.some((p) => p.path === "flux/echange/heavy-to-build.md"));
+  });
+
+  it("connected guests join the cycle", () => {
+    assert.equal(connectAgent({ id: "copilot", name: "Copilot" }).ok, true);
+    const r = cycle({ body: "Guest on the mesh. Never QUANTUM." });
+    assert.equal(r.ok, true);
+    assert.ok(r.consult.includes("copilot"));
+    assert.ok(r.packets.some((p) => p.path === "flux/consultation/grok-to-copilot.md"));
   });
 });
 
@@ -272,13 +320,13 @@ describe("fanout, parse, files", () => {
     });
     assert.equal(r.ok, true);
     const out = fanout(r.packet);
-    assert.equal(out.length, 10);
+    assert.equal(out.length, 12);
     assert.ok(out.every((p) => p.from === "grok" && p.to !== "grok" && p.to !== "*"));
     assert.ok(out.every((p) => p.path.startsWith("flux/proposition/grok-to-")));
     const filed = filePackets(r.packet);
     assert.equal(filed[0].to, "*");
     assert.equal(filed[0].path, "flux/proposition/grok-to-all.md");
-    assert.equal(filed.length, 11);
+    assert.equal(filed.length, 13);
   });
 
   it("parses FLUX header with mode and /flux to:chatgpt", () => {
@@ -350,8 +398,10 @@ describe("fanout, parse, files", () => {
     const files = materialize(packets);
     assert.equal(files["flux/proposition/grok-to-all.md"] != null, true);
     assert.equal(files["flux/consultation/grok-to-chatgpt.md"] != null, true);
+    assert.equal(files["flux/consultation/grok-to-heavy.md"] != null, true);
+    assert.equal(files["flux/consultation/grok-to-build.md"] != null, true);
     assert.equal(files["flux/challenge/chatgpt-to-grok.md"] != null, true);
-    assert.equal(files["flux/echange/sonnet-to-grok.md"] != null, true);
+    assert.equal(files["flux/echange/github-to-grok.md"] != null, true);
     assert.match(files["flux/proposition/grok-to-all.md"], /chef: grok/);
     assert.match(files["flux/proposition/grok-to-all.md"], /Worker stays GET \/juge/);
   });

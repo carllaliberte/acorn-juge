@@ -19,6 +19,7 @@ export const MODELS = Object.freeze({
     provider: "anthropic",
     secret: "ANTHROPIC_API_KEY",
     auto: true,
+    maxTokens: 2048,
   },
   fable: {
     id: "fable",
@@ -27,6 +28,8 @@ export const MODELS = Object.freeze({
     provider: "anthropic",
     secret: "ANTHROPIC_API_KEY",
     auto: false,
+    // Adaptive thinking is always on; 2048 is often eaten before text.
+    maxTokens: 8192,
   },
   chatgpt: {
     id: "chatgpt",
@@ -64,22 +67,56 @@ const TRIGGERS = {
   "/gemini": ["gemini"],
 };
 
-export function parseTrigger(commentBody = "", labels = []) {
-  const text = String(commentBody || "").toLowerCase();
-  const wanted = new Set();
-  for (const [cmd, ids] of Object.entries(TRIGGERS)) {
-    if (text.includes(cmd)) ids.forEach((id) => wanted.add(id));
-  }
-  const labelNames = (labels || []).map((l) =>
-    String(typeof l === "string" ? l : l.name || "").toLowerCase(),
-  );
-  if (labelNames.includes("fable") || labelNames.includes("fabre")) {
-    wanted.add("fable");
-  }
-  if (wanted.size > 0) return [...wanted];
+function autoIds() {
   return Object.values(MODELS)
     .filter((m) => m.auto)
     .map((m) => m.id);
+}
+
+/** Slash commands as tokens, not path fragments (`.github/swarm/...` is not `/swarm`). */
+export function commandsIn(text = "") {
+  const wanted = [];
+  const seen = new Set();
+  const src = String(text || "");
+  for (const [cmd, ids] of Object.entries(TRIGGERS)) {
+    const escaped = cmd.replace("/", "\\/");
+    const re = new RegExp(`(?:^|\\s)${escaped}(?=[\\s,;:!?.)]|$)`, "i");
+    if (re.test(src)) {
+      for (const id of ids) {
+        if (!seen.has(id)) {
+          seen.add(id);
+          wanted.push(id);
+        }
+      }
+    }
+  }
+  return wanted;
+}
+
+export function parseTrigger(
+  commentBody = "",
+  labels = [],
+  event = "pull_request",
+  action = "",
+  addedLabel = "",
+) {
+  const wanted = new Set(commandsIn(commentBody));
+  const labelNames = (labels || []).map((l) =>
+    String(typeof l === "string" ? l : l.name || "").toLowerCase(),
+  );
+  const extra = String(addedLabel || "").toLowerCase();
+  if (
+    labelNames.includes("fable") ||
+    labelNames.includes("fabre") ||
+    extra === "fable" ||
+    extra === "fabre"
+  ) {
+    wanted.add("fable");
+  }
+  if (wanted.size > 0) return [...wanted];
+  if (action === "labeled") return [];
+  if (event === "issue_comment") return [];
+  return autoIds();
 }
 
 export function keyedModels(ids, env = process.env) {
@@ -155,7 +192,7 @@ async function callAnthropic(spec, system, user, key) {
       },
       body: {
         model: spec.model,
-        max_tokens: 2048,
+        max_tokens: spec.maxTokens || 2048,
         system,
         messages: [{ role: "user", content: user }],
       },
@@ -298,15 +335,25 @@ function prNumberFromEvent(env = process.env) {
   }
 }
 
-function commentAndLabelsFromEvent(env = process.env) {
+export function eventMeta(env = process.env) {
+  const fallback = {
+    event: env.GITHUB_EVENT_NAME || "pull_request",
+    action: "",
+    comment: env.SWARM_COMMENT || "",
+    labels: [],
+    label: "",
+  };
   try {
     const ev = JSON.parse(readFileSync(env.GITHUB_EVENT_PATH, "utf8"));
     return {
-      comment: ev.comment?.body || "",
+      event: env.GITHUB_EVENT_NAME || fallback.event,
+      action: String(ev.action || ""),
+      comment: ev.comment?.body || fallback.comment,
       labels: ev.pull_request?.labels || ev.issue?.labels || [],
+      label: ev.label?.name || "",
     };
   } catch {
-    return { comment: env.SWARM_COMMENT || "", labels: [] };
+    return fallback;
   }
 }
 
@@ -314,13 +361,23 @@ export async function main(env = process.env) {
   const token = env.GITHUB_TOKEN;
   const repo = env.GITHUB_REPOSITORY; // owner/name
   const pr = prNumberFromEvent(env);
-  const { comment, labels } = commentAndLabelsFromEvent(env);
-  const ids = parseTrigger(comment, labels);
+  const meta = eventMeta(env);
+  const ids = parseTrigger(
+    meta.comment,
+    meta.labels,
+    meta.event,
+    meta.action,
+    meta.label,
+  );
+  if (!ids.length) {
+    console.log("swarm skip (no trigger)");
+    return 0;
+  }
   const { run, skip } = keyedModels(ids, env);
 
   if (!run.length) {
     const body = formatComment({ run, skip, results: [] });
-    if (token && repo && pr && comment) {
+    if (token && repo && pr && meta.comment) {
       const [owner, name] = repo.split("/");
       await gh(`/repos/${owner}/${name}/issues/${pr}/comments`, {
         method: "POST",

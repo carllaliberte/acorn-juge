@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handle, lireEpsilon, isCalendarDay, ORIGIN, PHRASE } from "../worker.js";
+import { handle, lireEpsilon, isCalendarDay, ORIGIN, PHRASE, proxyRequestHeaders } from "../worker.js";
 
 const TODAY = "2026-09-03";
 const HOST = "https://acorn-juge.example";
@@ -337,5 +337,54 @@ describe("vitrine proxy", () => {
     assert.equal(seen, ORIGIN + "/");
     assert.equal(res.status, 200);
     assert.equal(await res.text(), "face");
+  });
+
+  it("does not forward cookie or authorization to the vitrine", async () => {
+    let seen;
+    const res = await handle(
+      req("/", {
+        headers: {
+          cookie: "session=secret",
+          authorization: "Bearer x",
+          accept: "text/html",
+          "accept-language": "fr",
+          "x-forwarded-for": "1.2.3.4",
+        },
+      }),
+      {
+        today: TODAY,
+        fetchImpl: async (_u, init) => {
+          seen = init && init.headers;
+          return new Response("face", {
+            status: 200,
+            headers: { "content-type": "text/html" },
+          });
+        },
+      },
+    );
+    assert.equal(res.status, 200);
+    const h = seen instanceof Headers ? seen : new Headers(seen);
+    assert.equal(h.get("cookie"), null);
+    assert.equal(h.get("authorization"), null);
+    assert.equal(h.get("x-forwarded-for"), null);
+    assert.equal(h.get("accept"), "text/html");
+    assert.equal(h.get("accept-language"), "fr");
+  });
+
+  it("proxyRequestHeaders keep only the allowlist", () => {
+    const h = proxyRequestHeaders(
+      new Request(HOST + "/", {
+        headers: {
+          cookie: "a=b",
+          authorization: "Bearer x",
+          accept: "text/html",
+          host: "acorn-juge.example.workers.dev",
+        },
+      }),
+    );
+    assert.equal(h.get("cookie"), null);
+    assert.equal(h.get("authorization"), null);
+    assert.equal(h.get("host"), null);
+    assert.equal(h.get("accept"), "text/html");
   });
 });

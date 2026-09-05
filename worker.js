@@ -140,6 +140,21 @@ function todayUTC(now) {
 }
 
 /**
+ * Hop-by-hop and credential headers stay here.
+ * GET / forwards an allowlist only — never Cookie, Authorization, or *.
+ */
+const PROXY_REQUEST_HEADERS = ["accept", "accept-language"];
+
+function proxyRequestHeaders(req) {
+  const out = new Headers();
+  for (const name of PROXY_REQUEST_HEADERS) {
+    const v = req.headers.get(name);
+    if (v != null && String(v).trim() !== "") out.set(name, v);
+  }
+  return out;
+}
+
+/**
  * Preview decision for one request. Pure enough to test.
  * @param {Request} req
  * @param {{ today?: string, fetchImpl?: typeof fetch }} [opts]
@@ -173,7 +188,10 @@ export async function handle(req, opts = {}) {
   }
 
   const u = new URL(url.pathname + url.search, ORIGIN);
-  return doFetch(u.toString(), { method: req.method, headers: req.headers });
+  return doFetch(u.toString(), {
+    method: req.method,
+    headers: proxyRequestHeaders(req),
+  });
 }
 
 function jugeGet(req, p, today) {
@@ -242,7 +260,7 @@ function jugeGet(req, p, today) {
   });
 }
 
-export { ORIGIN, PHRASE, lireEpsilon, isCalendarDay };
+export { ORIGIN, PHRASE, lireEpsilon, isCalendarDay, proxyRequestHeaders, PROXY_REQUEST_HEADERS };
 
 export default {
   async fetch(req) {

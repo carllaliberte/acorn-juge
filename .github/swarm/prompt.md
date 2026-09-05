@@ -42,9 +42,10 @@ CODE ≠ TEST ≠ LIVE. HTML 404 on `/juge` is not a Worker receipt.
 
 ## Flux addressing
 
-Grok is chef. Grok writes under `flux/{mode}/{from}-to-{to}.md`.
+Grok is chef. GitHub first. Four modes always before Grok answers: PROPOSITION, CONSULTATION, ECHANGE, CHALLENGE.
+Heavy and Build always consult. Other AIs by specialty. Grok decides. Grok writes under `flux/{mode}/{from}-to-{to}.md`.
 
-Modes: PROPOSITION (Grok only), CONSULTATION (Grok to one AI), ECHANGE (all directions), CHALLENGE (must include Grok).
+Modes: PROPOSITION (Grok only), CONSULTATION (Grok to one AI; Heavy and Build always), ECHANGE (all directions), CHALLENGE (must include Grok).
 
 Comments may address a peer:
 
@@ -54,7 +55,7 @@ FLUX from:sonnet to:grok act:HANDOFF mode:ECHANGE grade:PROPOSED
 
 or `/flux to:chatgpt from:sonnet`. `/flux to:*` broadcasts to auto models.
 
-Named agents: grok, chatgpt, sonnet, fable, deepseek, gemini, cursor, ci, github, worker, carl.
+Named agents: grok, heavy, build, chatgpt, sonnet, fable, deepseek, gemini, cursor, ci, github, worker, carl.
 Future AIs may connect as guests. They cannot declare LIVE.
 
 If you are the `to`, answer that agent. You may hand off to any other. GitHub remembers the envelope. Chef files the path.

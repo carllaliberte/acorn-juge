@@ -116,6 +116,25 @@ function lireEpsilon(raw) {
   return { kind: "ok", value: n };
 }
 
+/**
+ * Real Gregorian calendar day, not YYYY-MM-DD syntax.
+ * Date.UTC rollover (Feb 31 → Mar) fails the round-trip.
+ */
+function isCalendarDay(value) {
+  if (value == null) return false;
+  const s = String(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const y = Number(s.slice(0, 4));
+  const m = Number(s.slice(5, 7));
+  const d = Number(s.slice(8, 10));
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return (
+    dt.getUTCFullYear() === y &&
+    dt.getUTCMonth() === m - 1 &&
+    dt.getUTCDate() === d
+  );
+}
+
 function todayUTC(now) {
   return (now || new Date()).toISOString().slice(0, 10);
 }
@@ -193,7 +212,7 @@ function jugeGet(req, p, today) {
     });
   }
 
-  if (!horizon || !/^\d{4}-\d{2}-\d{2}$/.test(horizon) || horizon < today) {
+  if (!isCalendarDay(horizon) || horizon < today) {
     return json(req, 400, {
       error: "horizon",
       phrase: PHRASE.horizon,
@@ -223,7 +242,7 @@ function jugeGet(req, p, today) {
   });
 }
 
-export { ORIGIN, PHRASE, lireEpsilon };
+export { ORIGIN, PHRASE, lireEpsilon, isCalendarDay };
 
 export default {
   async fetch(req) {

@@ -42,17 +42,22 @@ CODE ≠ TEST ≠ LIVE. HTML 404 on `/juge` is not a Worker receipt.
 
 ## Flux addressing
 
-Comments may address a peer, all directions:
+Grok is chef. Grok writes under `flux/{mode}/{from}-to-{to}.md`.
+
+Modes: PROPOSITION (Grok only), CONSULTATION (Grok to one AI), ECHANGE (all directions), CHALLENGE (must include Grok).
+
+Comments may address a peer:
 
 ```
-FLUX from:sonnet to:chatgpt act:HANDOFF grade:PROPOSED
+FLUX from:sonnet to:grok act:HANDOFF mode:ECHANGE grade:PROPOSED
 ```
 
 or `/flux to:chatgpt from:sonnet`. `/flux to:*` broadcasts to auto models.
 
 Named agents: grok, chatgpt, sonnet, fable, deepseek, gemini, cursor, ci, github, worker, carl.
+Future AIs may connect as guests. They cannot declare LIVE.
 
-If you are the `to`, answer that agent. You may hand off to any other. GitHub remembers the envelope.
+If you are the `to`, answer that agent. You may hand off to any other. GitHub remembers the envelope. Chef files the path.
 
 Flux is **not** a Worker canal. Do not bind `/flux` on GET `/juge`. Do not invent a second `*.grok.me`.
 

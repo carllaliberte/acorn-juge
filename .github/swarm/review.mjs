@@ -143,10 +143,13 @@ export function idsForComment(
 
 export function addressResult(result, to = "github") {
   if (!result || result.skipped || result.error || !result.text) return result;
+  const from = result.id;
+  const mode = from === "grok" || to === "grok" ? "CHALLENGE" : "ECHANGE";
   const r = acceptFlux({
-    from: result.id,
+    from,
     to,
     act: "FINDING",
+    mode,
     grade: "PROPOSED",
     body: result.text,
   });

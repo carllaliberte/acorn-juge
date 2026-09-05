@@ -103,7 +103,9 @@ describe("flux addressing on comments", () => {
       { id: "chatgpt", label: "ChatGPT", model: "gpt-5.6-terra", text: "Do not bind /flux on the Worker. Never QUANTUM." },
       "grok",
     );
-    assert.match(out.text, /^FLUX from:chatgpt to:grok act:FINDING grade:PROPOSED/m);
+    assert.match(out.text, /^FLUX from:chatgpt to:grok act:FINDING mode:CHALLENGE grade:PROPOSED/m);
+    assert.match(out.text, /path: flux\/challenge\/chatgpt-to-grok\.md/);
+    assert.match(out.text, /chef: grok/);
     assert.match(out.text, /preview:true/);
   });
 });

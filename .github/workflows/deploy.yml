@@ -1,17 +1,16 @@
-# Carl only. workflow_dispatch — not push, not a model ACTION.
-# Token lives in GitHub Actions secrets. Bots do not hold it.
-name: Deploy Worker
+name: deploy
 on:
   workflow_dispatch:
-
 jobs:
-  deploy:
+  wrangler:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm test
+      - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: deploy

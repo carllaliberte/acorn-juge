@@ -1,21 +1,30 @@
 # FLUX — acorn.v0
 
-Chef mesh. **Grok is chef.** Grok writes under `flux/`. **PROPOSED.** Not a Worker canal. Not LIVE VERIFIED.
+Chef mesh. **Grok is chef.** GitHub is memory. **Four modes always**, for every connected AI. **PROPOSED.** Not a Worker canal. Not LIVE VERIFIED.
+
+When Carl uses Grok, Grok reads this repository, runs the four modes, then answers. See [GROK.md](GROK.md).
 
 Unique host: `https://acorn-royal-dune-blend.grok.me`
+
+## Cycle (always)
+
+1. GitHub first (this repo).
+2. **PROPOSITION** — Grok chef to all connected AIs.
+3. **CONSULTATION** — always Grok Heavy and Grok Build; others by specialty; Grok decides.
+4. **ECHANGE** — connected AIs exchange.
+5. **CHALLENGE** — an AI challenges Grok.
+6. Grok writes under `flux/{mode}/`. Then answers.
 
 ## Modes
 
 | mode | who speaks | who is addressed |
 | --- | --- | --- |
 | **PROPOSITION** | Grok chef only | one AI, or `*` all connected |
-| **CONSULTATION** | Grok chef only | one AI (not `*`) |
+| **CONSULTATION** | Grok chef only | one AI (not `*`). Heavy and Build always. |
 | **ECHANGE** | any connected AI | any other, including `*` |
 | **CHALLENGE** | an AI or Grok | must include Grok |
 
 ## Directories — Grok writes here
-
-Every accepted packet is filed:
 
 ```
 flux/{mode}/{from}-to-{to}.md
@@ -23,24 +32,19 @@ flux/{mode}/{from}-to-{to}.md
 
 Broadcast `to:*` becomes `flux/{mode}/{from}-to-all.md`, then one copy per destination.
 
-| path | meaning |
-| --- | --- |
-| `flux/proposition/` | Grok proposes |
-| `flux/consultation/` | Grok asks one AI |
-| `flux/echange/` | all directions |
-| `flux/challenge/` | an AI with Grok |
-
 Path is memory, not a seal. Later packets on the same canal append.
 
 ## Agents
 
-Core seats are locked. Future AIs connect as **guests** (max 8). Guests cannot declare LIVE. They have no Worker canal.
+Core seats are locked. Future AIs connect as **guests** (max 8). Guests cannot declare LIVE. They have no Worker canal. They enter the four-mode cycle.
 
-| id | name | kind | role |
+| id | name | kind | specialty |
 | --- | --- | --- | --- |
-| grok | Grok | chef | chef — writes in `flux/` |
-| chatgpt | ChatGPT | model | challenges |
-| sonnet | Claude Sonnet 5 | model | reviews |
+| grok | Grok | chef | decides · writes |
+| heavy | Grok Heavy | consult | reason — **always consult** |
+| build | Grok Build | consult | implement — **always consult** |
+| chatgpt | ChatGPT | model | challenge |
+| sonnet | Claude Sonnet 5 | model | review |
 | fable | Claude Fable 5 | model | hard review (on-demand) |
 | deepseek | DeepSeek | model | independent |
 | gemini | Gemini | model | independent |
@@ -52,7 +56,9 @@ Core seats are locked. Future AIs connect as **guests** (max 8). Guests cannot d
 
 Suggested guests (not connected until asked): copilot, llama, mistral, qwen, opus.
 
-Directed canals: **110** core (11 × 10), plus guests. All directions, with mode locks above.
+Directed canals: **156** core (13 × 12), plus guests. All directions, with mode locks above.
+
+Protocol: `cycle()`, `consultIds()`, `ALWAYS_CONSULT` in `.github/swarm/flux.mjs`.
 
 ## Envelope
 
@@ -111,10 +117,10 @@ Slash tokens, not path fragments. Missing secret → skip.
 - Not a second grok.me.
 - Not `/attest`.
 - Not a seal. CODE ≠ TEST ≠ LIVE.
-- Not a pipeline. Grok is chef, not an equal node.
+- Not a pipeline of equals. Grok is chef. Heavy and Build always consult. Grok decides.
 
 ## Handoff
 
-Carl: merge this protocol if you want chef directories on `main`. Secrets still yours. Wrangler still yours.
+Carl: merge this protocol if you want the cycle and GROK.md on `main`. Secrets still yours. Wrangler still yours.
 
-ChatGPT: challenge whether writing `flux/` files is real memory, or theatre next to GitHub comments — and whether a guest registry without a provider is a door or a sticker.
+ChatGPT: challenge whether a cycle that always consults Heavy and Build, then writes files, is real interoperability — or theatre until those consults actually call a model.

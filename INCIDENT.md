@@ -20,7 +20,9 @@ journal hébergeur inquiétant, clé ou secret exposé, autre brèche possible) 
 3. Ne pas wrangler, ne pas merger, ne pas inventer un second `*.grok.me`.
 4. Ne pas signer, ne pas prétendre un reçu ou QUANTUM.
 
-**TODO (Carl) :** remplir le canal de contact dans [PRIVACY.md](PRIVACY.md).
+Canal de contact : [Laliberte22@gmail.com](mailto:Laliberte22@gmail.com)
+(même canal que [PRIVACY.md](PRIVACY.md)). Carl Laliberté est le contact
+pour les avis d’incident.
 
 ## 2. Carl évalue
 
@@ -53,6 +55,7 @@ publique. Personne d’autre ne déclare LIVE.
 ## Incident path (short)
 
 Not counsel. If a security or privacy incident is suspected on this Worker
-or the grok.me vitrine: **notify Carl first.** CAI and affected persons
-under Loi 25 / RLRQ c. P-39.1 art. 3.5 only when **Carl** finds a risk of
-serious injury. This file does not promise timelines. Carl decides.
+or the grok.me vitrine: **notify Carl Laliberté first** at
+[Laliberte22@gmail.com](mailto:Laliberte22@gmail.com). CAI and affected
+persons under Loi 25 / RLRQ c. P-39.1 art. 3.5 only when **Carl** finds a
+risk of serious injury. This file does not promise timelines. Carl decides.

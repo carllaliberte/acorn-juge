@@ -142,6 +142,25 @@ describe("GET /juge — preview, not a seal", () => {
     assert.equal(j.error, "cards");
   });
 
+  it("400 cards on unknown temoin", async () => {
+    const res = await call(
+      "/juge?quelle=os&temoin=webcam&epsilon=1e-6&horizon=2027-12-31",
+    );
+    const j = await body(res);
+    assert.equal(res.status, 400);
+    assert.equal(j.error, "cards");
+    assert.equal(j.preview, true);
+  });
+
+  it("400 cards when quelle and temoin are both unknown", async () => {
+    const res = await call(
+      "/juge?quelle=webcam&temoin=xyz&epsilon=1e-6&horizon=2027-12-31",
+    );
+    const j = await body(res);
+    assert.equal(res.status, 400);
+    assert.equal(j.error, "cards");
+  });
+
   it("400 horizon on a past date", async () => {
     const res = await call(
       "/juge?quelle=os&temoin=aucun&epsilon=1e-6&horizon=2020-01-01",
@@ -149,6 +168,18 @@ describe("GET /juge — preview, not a seal", () => {
     const j = await body(res);
     assert.equal(res.status, 400);
     assert.equal(j.error, "horizon");
+  });
+
+  it("400 horizon on malformed strings that are not a calendar day", async () => {
+    for (const horizon of ["UFHY1", "not-a-date"]) {
+      const res = await call(
+        `/juge?quelle=os&temoin=aucun&epsilon=1e-6&horizon=${horizon}`,
+      );
+      const j = await body(res);
+      assert.equal(res.status, 400, horizon);
+      assert.equal(j.error, "horizon", horizon);
+      assert.equal(j.preview, true, horizon);
+    }
   });
 
   it("400 horizon on impossible calendar days that match YYYY-MM-DD", async () => {

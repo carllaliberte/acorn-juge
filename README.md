@@ -50,6 +50,22 @@ Do not patch that again.
 The vitrine slug still serves Famille HTML 404 for `/juge`.
 No second `.grok.me`.
 
+## Jalon 4 — validation matrix
+
+GET `/juge` unit tests lock these cases. A 200 is preview, not a receipt.
+Live HTML 404 on the grok.me vitrine is not a Worker receipt.
+
+| Case | Example | HTTP | `error` |
+|---|---|---|---|
+| ε = 0 | `epsilon=0` | 400 | `lie` |
+| ε missing | no `epsilon` / empty | 400 | `EPSILON_MISSING` |
+| unknown `quelle` or `temoin` | `quelle=webcam` · `temoin=webcam` | 400 | `cards` |
+| horizon not a calendar day | `2027-02-31` · `UFHY1` · `not-a-date` | 400 | `horizon` |
+| `temoin=di` without transcript | no `transcript` | 400 | `transcript` |
+
+Deploy remains **workflow_dispatch**, Carl-only (phone-capable). This PR does
+not run wrangler. grok.me bind / 404 Soft FLAG stays Carl.
+
 ## Deploy (cell)
 
 1. Repo secret `CLOUDFLARE_API_TOKEN` = one line, no `Bearer`.

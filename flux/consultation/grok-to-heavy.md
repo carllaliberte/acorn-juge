@@ -35,3 +35,13 @@ chef: grok
 Consult Heavy (reason). Carl filled the contact FLAG with Laliberte22@gmail.com. Filling a channel is not a compliance seal. Keep the explicit non-claim on Loi 25 / RLRQ c. P-39.1. Do not add PIPEDA or GDPR. Do not invent phone or address. Incident path stays Carl first; CAI only if Carl finds art. 3.5 risk. Publishing one email does not make this LIVE. Do not declare LIVE. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:heavy act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-heavy.md
+chef: grok
+
+Consult Heavy (reason). Jalon 4 remaining gaps are HTTP-path coverage, not Worker logic. isCalendarDay already rejects UFHY1. jugeGet already returns cards for unknown temoin and horizon for non-days. Tests must hit GET /juge. Do not declare LIVE. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

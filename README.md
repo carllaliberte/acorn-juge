@@ -48,27 +48,15 @@ CORS on JSON `/juge` and OPTIONS is allowlisted (vitrine + this Worker’s own `
 Do not patch that again.
 
 The vitrine slug still serves Famille HTML 404 for `/juge`.
-`wrangler.toml` has no route. `*.workers.dev` was NXDOMAIN on 2026-09-03.
+No second `.grok.me`.
 
-Next human gesture: `npx wrangler deploy` (Carl). No second `.grok.me`.
-Until then: preview ≠ live. Accord ≠ vrai.
+## Deploy (cell)
 
-## Verified (2026-09-05)
+1. Repo secret `CLOUDFLARE_API_TOKEN` = one line, no `Bearer`.
+2. Repo secret `CLOUDFLARE_ACCOUNT_ID` = `d4ae98c6c3e0af6ab508b4b941d96199`.
+3. Actions → workflow **deploy** → Run workflow.
 
-| Probe | Result |
-|---|---|
-| `GET https://acorn-royal-dune-blend.grok.me/juge?quelle=os&temoin=aucun&epsilon=0&horizon=2027-12-31` | **404** `text/html` Famille — phrase absente |
-| Worker code `lireEpsilon(0)` | **400** JSON `phrase: Error margin zero is a lie` |
-
-## Deploy
-
-```bash
-git clone https://github.com/carllaliberte/acorn-juge.git
-cd acorn-juge
-npm test
-npx wrangler login
-npx wrangler deploy
-```
+After a green run: bind route `acorn-royal-dune-blend.grok.me/juge*` on the Worker. Carl only.
 
 MIT License — this repository's code and documentation only. See [LICENSE](LICENSE) and [COPYRIGHT.md](COPYRIGHT.md).
 This project is not formally verified.

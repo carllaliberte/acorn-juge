@@ -53,10 +53,10 @@ conçu pour collecter des données sensibles. Carl décide de tout élargissemen
 
 ## Responsable
 
-Carl Laliberté, Québec.
+Carl Laliberté, Québec. Contact pour avis de vie privée ou d’incident.
 
-**TODO (Carl) :** remplir un canal de contact (courriel ou autre). Ne pas
-inventer d’adresse ici.
+Canal : [Laliberte22@gmail.com](mailto:Laliberte22@gmail.com).
+Pas d’autre canal publié ici.
 
 ## Âge et consentement
 
@@ -83,6 +83,7 @@ Not a receipt, not a seal, not QUANTUM. Hosted on Cloudflare and a nominative
 grok.me vitrine (third-party). Host-level logs may exist — this repo does not
 promise zero logs. `Cookie` / `Authorization` are not forwarded. This repo has
 no `localStorage` / AES. Responsible person: Carl Laliberté, Québec —
-**TODO (Carl): fill a contact channel.** Not directed at children; no sensitive
-collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the Québec frame
-Carl reads. **This repo does not claim compliance.**
+contact for privacy / incident notices:
+[Laliberte22@gmail.com](mailto:Laliberte22@gmail.com). Not directed at children;
+no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the
+Québec frame Carl reads. **This repo does not claim compliance.**

@@ -59,5 +59,6 @@ No second `.grok.me`.
 After a green run: bind route `acorn-royal-dune-blend.grok.me/juge*` on the Worker. Carl only.
 
 MIT License — this repository's code and documentation only. See [LICENSE](LICENSE) and [COPYRIGHT.md](COPYRIGHT.md).
+Privacy / incidents (this Worker only): [PRIVACY.md](PRIVACY.md) · [INCIDENT.md](INCIDENT.md).
 This project is not formally verified.
 QUANTUM is not licensed here. Preview ≠ receipt.

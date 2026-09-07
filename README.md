@@ -34,6 +34,13 @@ They are not the judge. Judgment = Carl.
 
 CORS on JSON `/juge` and OPTIONS is allowlisted (vitrine + this Worker’s own `*.workers.dev` host), not `*`.
 
+When this Worker is in front of the host, `GET /privacy` and `GET /legal`
+are served here (human-readable HTML; same substance as [PRIVACY.md](PRIVACY.md)
+and the MIT / copyright facts in [LICENSE](LICENSE) / [COPYRIGHT.md](COPYRIGHT.md)).
+They do not proxy to the nominative grok.me origin. Hitting that origin
+without the Worker in front may still 404. A Carl bind limited to `/juge*`
+does not deliver those paths. This PR does not patch the origin host.
+
 ## Missing ε — FLAG, not a seal
 
 | Consumer | missing `epsilon` | `epsilon: 0` / `none` / `iid` |
@@ -75,6 +82,6 @@ not run wrangler. grok.me bind / 404 Soft FLAG stays Carl.
 After a green run: bind route `acorn-royal-dune-blend.grok.me/juge*` on the Worker. Carl only.
 
 MIT License — this repository's code and documentation only. See [LICENSE](LICENSE) and [COPYRIGHT.md](COPYRIGHT.md).
-Privacy / incidents (this Worker only): [PRIVACY.md](PRIVACY.md) · [INCIDENT.md](INCIDENT.md).
+Privacy / incidents (this Worker only): [PRIVACY.md](PRIVACY.md) · [INCIDENT.md](INCIDENT.md) · live `GET /privacy` and `GET /legal` when this Worker is in front.
 This project is not formally verified.
 QUANTUM is not licensed here. Preview ≠ receipt.

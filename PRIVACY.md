@@ -28,6 +28,16 @@ Un 200 ici est **APERÇU / CLASSIQUE**. Preview ≠ receipt.
 Hôte unique (vitrine nominative grok.me, pas un domaine FAMILLE) :
 https://acorn-royal-dune-blend.grok.me
 
+## Routes Worker (déclaratif ↔ architectural)
+
+Quand **ce Worker** est devant l’hôte, `GET /privacy` et `GET /legal` sont
+servis ici (HTML 200). Ils ne passent pas par le proxy vers l’origine
+nominative grok.me.
+
+Frapper l’origine grok.me **sans** ce Worker devant peut encore 404. Ce
+fichier ne prétend pas que le slug origine a été corrigé. Un bind Carl
+limité à `/juge*` ne livre pas ces chemins. Ce n’est pas un reçu.
+
 ## Hébergement (tiers)
 
 - **Cloudflare Worker** — exécution du script de ce dépôt.
@@ -87,3 +97,6 @@ contact for privacy / incident notices:
 [Laliberte22@gmail.com](mailto:Laliberte22@gmail.com). Not directed at children;
 no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the
 Québec frame Carl reads. **This repo does not claim compliance.**
+Live Worker routes `GET /privacy` and `GET /legal` are served by this Worker
+when it is in front of the host. The nominative grok.me origin itself may
+still 404 if hit without the Worker.

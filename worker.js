@@ -1,5 +1,6 @@
 /**
  * acorn-juge — GET /juge preview canal.
+ * GET /privacy and GET /legal are served here (not origin proxy).
  * Preview, not a receipt, not a seal, not QUANTUM.
  *
  * Face (vitrine, nominative grok.me slug — not a FAMILLE-owned domain):
@@ -11,6 +12,8 @@
  *   GARDE → fail-closed EPSILON_MISSING until those two agree
  * Do not unwind d55799e. ε = 0 stays a lie.
  */
+
+import { legalDocument, privacyDocument } from "./pages.js";
 
 const ORIGIN = "https://acorn-royal-dune-blend.grok.me";
 const QUELLE = ["os", "qrng", "qkd"];
@@ -107,6 +110,17 @@ function corsPreflight(req) {
   });
 }
 
+function html(req, document) {
+  return new Response(document, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      ...corsHeaders(req),
+      "cache-control": "no-store",
+    },
+  });
+}
+
 function lireEpsilon(raw) {
   if (raw == null || String(raw).trim() === "") return { kind: "missing" };
   const v = String(raw).trim();
@@ -185,6 +199,16 @@ export async function handle(req, opts = {}) {
       );
     }
     return jugeGet(req, url.searchParams, today);
+  }
+
+  if (url.pathname === "/privacy" || url.pathname === "/legal") {
+    if (req.method !== "GET") {
+      return json(req, 405, { error: "method", preview: true }, { allow: "GET, OPTIONS" });
+    }
+    return html(
+      req,
+      url.pathname === "/privacy" ? privacyDocument() : legalDocument(),
+    );
   }
 
   const u = new URL(url.pathname + url.search, ORIGIN);

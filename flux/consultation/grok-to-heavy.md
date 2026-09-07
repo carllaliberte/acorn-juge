@@ -45,3 +45,13 @@ chef: grok
 Consult Heavy (reason). Jalon 4 remaining gaps are HTTP-path coverage, not Worker logic. isCalendarDay already rejects UFHY1. jugeGet already returns cards for unknown temoin and horizon for non-days. Tests must hit GET /juge. Do not declare LIVE. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:heavy act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-heavy.md
+chef: grok
+
+Consult Heavy (reason). Live /privacy and /legal 404 because handle() proxies unknown paths to grok.me origin. Serve those two GET pages before fallthrough. Keep PROXY_REQUEST_HEADERS accept/accept-language. Do not claim Loi 25 compliance. A /juge* bind still does not deliver these paths. Do not declare LIVE. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

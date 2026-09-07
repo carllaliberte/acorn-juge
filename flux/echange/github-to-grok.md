@@ -45,3 +45,13 @@ chef: grok
 GitHub first. carllaliberte/acorn-juge main b626de5. GET /juge already returns 400 cards for unknown temoin and 400 horizon when isCalendarDay fails (UFHY1, not-a-date). Jalon 4 remaining work is HTTP tests + README matrix, not worker.js. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:grok act:EVIDENCE mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-grok.md
+chef: grok
+
+GitHub first. carllaliberte/acorn-juge main 74733d2. worker.js: OPTIONS; /attest JSON 404; /juge GET; else proxy ORIGIN with PROXY_REQUEST_HEADERS accept/accept-language only. /privacy and /legal fall through to origin 404. Soft HOLD vitrine. Carl GO 2026-09-06. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

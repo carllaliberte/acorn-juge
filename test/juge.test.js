@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handle, lireEpsilon, isCalendarDay, ORIGIN, PHRASE, proxyRequestHeaders } from "../worker.js";
+import { handle, lireEpsilon, isCalendarDay, ORIGIN, PHRASE, proxyRequestHeaders, PROXY_REQUEST_HEADERS } from "../worker.js";
 
 const TODAY = "2026-09-03";
 const HOST = "https://acorn-juge.example";
@@ -417,5 +417,86 @@ describe("vitrine proxy", () => {
     assert.equal(h.get("authorization"), null);
     assert.equal(h.get("host"), null);
     assert.equal(h.get("accept"), "text/html");
+    assert.deepEqual(PROXY_REQUEST_HEADERS, ["accept", "accept-language"]);
+  });
+});
+
+async function pageCall(path, init = {}, fetchImpl) {
+  let fetched = 0;
+  const res = await handle(req(path, init), {
+    today: TODAY,
+    fetchImpl: fetchImpl || (async () => {
+      fetched += 1;
+      return new Response("origin-404", {
+        status: 404,
+        headers: { "content-type": "text/html" },
+      });
+    }),
+  });
+  return { res, fetched };
+}
+
+describe("GET /privacy and GET /legal — Worker pages, not origin proxy", () => {
+  it("GET /privacy is 200 text/html and does not fetch the vitrine", async () => {
+    const { res, fetched } = await pageCall("/privacy");
+    const t = await res.text();
+    assert.equal(fetched, 0);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get("content-type"), /text\/html/);
+    assert.notEqual(acao(res), "*");
+    assert.match(t, /Laliberte22@gmail.com/);
+    assert.match(t, /Carl Laliberté/);
+    assert.match(t, /Québec/);
+    assert.match(t, /GET \/juge/);
+    assert.match(t, /Cookie/);
+    assert.match(t, /Authorization/);
+    assert.match(t, /localStorage/);
+    assert.match(t, /does not claim compliance/);
+    assert.match(t, /ne se déclare pas conforme/);
+    assert.match(t, /pas QUANTUM|not QUANTUM/);
+    assert.doesNotMatch(t, /\bPIPEDA\b/);
+    assert.doesNotMatch(t, /\bGDPR\b/);
+  });
+
+  it("GET /legal is 200 text/html and does not fetch the vitrine", async () => {
+    const { res, fetched } = await pageCall("/legal");
+    const t = await res.text();
+    assert.equal(fetched, 0);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get("content-type"), /text\/html/);
+    assert.notEqual(acao(res), "*");
+    assert.match(t, /Laliberte22@gmail.com/);
+    assert.match(t, /Carl Laliberté/);
+    assert.match(t, /\/privacy/);
+    assert.match(t, /MIT/);
+    assert.match(t, /LICENSE/);
+    assert.match(t, /COPYRIGHT\.md/);
+    assert.match(t, /2026/);
+    assert.match(t, /GET \/juge/);
+    assert.match(t, /does not claim compliance|No Loi 25/);
+    assert.doesNotMatch(t, /conforme à la Loi 25/);
+  });
+
+  it("OPTIONS /privacy and /legal use the same CORS helpers and never *", async () => {
+    for (const path of ["/privacy", "/legal"]) {
+      const res = await call(path, {
+        method: "OPTIONS",
+        headers: { origin: ORIGIN },
+      });
+      assert.equal(res.status, 204, path);
+      assert.equal(acao(res), ORIGIN, path);
+      assert.notEqual(acao(res), "*", path);
+      assert.match(res.headers.get("access-control-allow-methods"), /GET/);
+    }
+  });
+
+  it("POST /privacy and /legal are 405 and do not proxy", async () => {
+    for (const path of ["/privacy", "/legal"]) {
+      const { res, fetched } = await pageCall(path, { method: "POST" });
+      const j = await res.json();
+      assert.equal(fetched, 0, path);
+      assert.equal(res.status, 405, path);
+      assert.equal(j.error, "method", path);
+    }
   });
 });

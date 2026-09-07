@@ -45,3 +45,13 @@ chef: grok
 Grok chef proposes closing Jalon 4 GET /juge validation test gaps. Worker logic already correct: unknown temoin → 400 cards; horizon strings that are not a calendar day (UFHY1, not-a-date) → 400 horizon; unknown quelle+temoin together still cards. Add tests + a short README validation matrix. Do not patch worker.js. Deploy stays workflow_dispatch Carl-only. Do not wrangler. Do not merge. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:* act:HANDOFF mode:PROPOSITION grade:PROPOSED
+path: flux/proposition/grok-to-all.md
+chef: grok
+
+Grok chef proposes Soft HOLD close on vitrine /privacy + /legal 404. Before proxy fallthrough, Worker serves GET /privacy (PRIVACY.md substance) and GET /legal (scope, /privacy pointer, MIT from LICENSE/COPYRIGHT.md, contact Laliberte22@gmail.com). OPTIONS stays CORS helpers. No Cookie/Authorization on remaining proxy. No ACAO *. No Loi 25 compliance claim. Not a receipt. Origin without Worker may still 404. Do not wrangler. Legal does not merge. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

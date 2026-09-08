@@ -55,3 +55,13 @@ chef: grok
 Exchange. Reason then implement Worker GET /privacy and GET /legal before proxy. Same substance as PRIVACY.md. Short legal page, no invented lawyer text. Tests must prove no origin fetch. Cookie/Authorization stay off the proxy allowlist. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:heavy to:build act:HANDOFF mode:ECHANGE grade:PROPOSED
+path: flux/echange/heavy-to-build.md
+chef: grok
+
+Exchange. Reason then implement the /porte inventory in PRIVACY.md and privacyDocument(). Static HTML, no form, no new params, not a collection. Drop dangling EXPERIENCE.md comment. No worker.js routing patch. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

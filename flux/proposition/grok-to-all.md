@@ -55,3 +55,13 @@ chef: grok
 Grok chef proposes Soft HOLD close on vitrine /privacy + /legal 404. Before proxy fallthrough, Worker serves GET /privacy (PRIVACY.md substance) and GET /legal (scope, /privacy pointer, MIT from LICENSE/COPYRIGHT.md, contact Laliberte22@gmail.com). OPTIONS stays CORS helpers. No Cookie/Authorization on remaining proxy. No ACAO *. No Loi 25 compliance claim. Not a receipt. Origin without Worker may still 404. Do not wrangler. Legal does not merge. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:* act:HANDOFF mode:PROPOSITION grade:PROPOSED
+path: flux/proposition/grok-to-all.md
+chef: grok
+
+Grok chef proposes a docs-only inventory fix after #25. PRIVACY.md Routes Worker (FR) and Privacy (short) EN list GET /porte as static HTML served by this Worker when in front of the host: no form, no new query params, not a collection. privacyDocument() matches. Keep grok.me origin /juge*-only bind honesty. No compliance claim. Contact Laliberte22@gmail.com unchanged. Drop dangling EXPERIENCE.md comment. No worker routing. No LICENSE. No keys. Do not wrangler. Legal does not merge. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

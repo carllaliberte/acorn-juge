@@ -1,6 +1,6 @@
 /**
  * Static pages for GET /privacy, GET /legal, GET /porte.
- * Substance stays aligned with PRIVACY.md, LICENSE, COPYRIGHT.md, EXPERIENCE.md.
+ * Substance stays aligned with PRIVACY.md, LICENSE, COPYRIGHT.md.
  * Not a receipt, not a seal, not QUANTUM. Not a Loi 25 / PIPEDA / GDPR claim.
  * This Worker is not the Acorn product.
  */
@@ -77,6 +77,10 @@ export function privacyDocument() {
       "</tbody></table>",
       "<p>Ce n’est <strong>pas</strong> un reçu. Ce n’est <strong>pas</strong> un sceau. Ce n’est <strong>pas</strong> QUANTUM. Un 200 ici est <strong>APERÇU / CLASSIQUE</strong>. Preview ≠ receipt.</p>",
       "<p>Hôte unique (vitrine nominative grok.me, pas un domaine FAMILLE) : https://acorn-royal-dune-blend.grok.me</p>",
+      "<h2>Routes Worker (déclaratif ↔ architectural)</h2>",
+      "<p>Quand <strong>ce Worker</strong> est devant l’hôte, <code>GET /privacy</code>, <code>GET /legal</code> et <code>GET /porte</code> sont servis ici (HTML 200). Ils ne passent pas par le proxy vers l’origine nominative grok.me.</p>",
+      "<p><code>GET /porte</code> est du HTML statique : pas de formulaire, pas de nouveaux paramètres de requête, pas une collecte.</p>",
+      "<p>Frapper l’origine grok.me <strong>sans</strong> ce Worker devant peut encore 404. Ce fichier ne prétend pas que le slug origine a été corrigé. Un bind Carl limité à <code>/juge*</code> ne livre pas ces chemins. Ce n’est pas un reçu.</p>",
       "<h2>Hébergement (tiers)</h2>",
       "<ul>",
       "<li><strong>Cloudflare Worker</strong> — exécution du script de ce dépôt.</li>",
@@ -102,7 +106,7 @@ export function privacyDocument() {
       "<h2>Privacy (short)</h2>",
       "<p>Not legal advice. This Worker is a GET <code>/juge</code> preview canal: JSON from query params (<code>quelle</code>, <code>temoin</code>, <code>epsilon</code>, <code>horizon</code>; <code>transcript</code> when <code>temoin=di</code>). Not a receipt, not a seal, not QUANTUM. Hosted on Cloudflare and a nominative grok.me vitrine (third-party). Host-level logs may exist — this repo does not promise zero logs. <code>Cookie</code> / <code>Authorization</code> are not forwarded. This repo has no <code>localStorage</code> / AES. Responsible person: Carl Laliberté, Québec — contact for privacy / incident notices: " +
         CONTACT +
-        ". Not directed at children; no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the Québec frame Carl reads. <strong>This repo does not claim compliance.</strong></p>",
+        ". Not directed at children; no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the Québec frame Carl reads. <strong>This repo does not claim compliance.</strong> Live Worker routes <code>GET /privacy</code>, <code>GET /legal</code> and <code>GET /porte</code> are served by this Worker when it is in front of the host. <code>GET /porte</code> is static HTML: no form, no new query params, not a collection. The nominative grok.me origin itself may still 404 if hit without the Worker.</p>",
     ].join("\n"),
   );
 }

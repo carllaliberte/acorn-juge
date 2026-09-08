@@ -55,3 +55,13 @@ chef: grok
 Consult Heavy (reason). Live /privacy and /legal 404 because handle() proxies unknown paths to grok.me origin. Serve those two GET pages before fallthrough. Keep PROXY_REQUEST_HEADERS accept/accept-language. Do not claim Loi 25 compliance. A /juge* bind still does not deliver these paths. Do not declare LIVE. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:heavy act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-heavy.md
+chef: grok
+
+Consult Heavy (reason). After #25, worker.js already serves GET /porte as static HTML. PRIVACY.md still names only /privacy and /legal. Listing /porte is honesty, not a new collection and not a live bind. A /juge* bind still 404s these paths on origin. Do not claim Loi 25 compliance. Do not invent EXPERIENCE.md product claims. Do not declare LIVE. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

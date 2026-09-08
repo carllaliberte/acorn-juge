@@ -55,3 +55,13 @@ chef: grok
 GitHub first. carllaliberte/acorn-juge main 74733d2. worker.js: OPTIONS; /attest JSON 404; /juge GET; else proxy ORIGIN with PROXY_REQUEST_HEADERS accept/accept-language only. /privacy and /legal fall through to origin 404. Soft HOLD vitrine. Carl GO 2026-09-06. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:grok act:EVIDENCE mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-grok.md
+chef: grok
+
+GitHub first. carllaliberte/acorn-juge main 6f30635 merged PR #25 (porteDocument). worker.js already serves GET /porte as static HTML before proxy. PRIVACY.md Routes Worker and privacyDocument() still name only GET /privacy and GET /legal. EXPERIENCE.md is cited in pages.js and missing. Soft HOLD LIVE Worker bind unchanged. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

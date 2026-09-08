@@ -55,3 +55,13 @@ chef: grok
 Consult Build (implement). In handle(), before proxy, GET /privacy and GET /legal return 200 text/html. Embed PRIVACY.md substance plus short legal copy. Extend test/juge.test.js so those routes do not fetch origin. Do not change LICENSE, secrets, or wrangler.toml. Do not merge. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:build act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-build.md
+chef: grok
+
+Consult Build (implement). Docs only: add GET /porte to PRIVACY.md Routes Worker and Privacy (short), and to privacyDocument() so live /privacy HTML matches. Drop dangling EXPERIENCE.md comment. Do not touch worker.js routing, wrangler.toml, secrets, keys, or LICENSE. Update tests only if they assert the old Routes Worker wording. Do not merge. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

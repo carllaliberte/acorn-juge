@@ -19,3 +19,7 @@ licensed here. This MIT grant does not relicense Acorn the work as
 open source.
 
 **QUANTUM** is not licensed here.
+
+Three regimes: ARR private (acorn, unforge, filon-noeud) / MIT map (famille) / public rails (this canal: code licensed, names not granted).
+See NOTICE.
+Marks are not licensed by MIT.

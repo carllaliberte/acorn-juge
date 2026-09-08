@@ -1,6 +1,6 @@
 /**
- * Static pages for GET /privacy and GET /legal.
- * Substance stays aligned with PRIVACY.md, LICENSE, COPYRIGHT.md.
+ * Static pages for GET /privacy, GET /legal, GET /porte.
+ * Substance stays aligned with PRIVACY.md, LICENSE, COPYRIGHT.md, EXPERIENCE.md.
  * Not a receipt, not a seal, not QUANTUM. Not a Loi 25 / PIPEDA / GDPR claim.
  * This Worker is not the Acorn product.
  */
@@ -10,6 +10,8 @@ const STYLE =
   "h1{font-size:1.4rem}h2{font-size:1.1rem;margin-top:1.6rem}" +
   "table{border-collapse:collapse;width:100%;font-size:.95rem}" +
   "th,td{border:1px solid #555;padding:.3rem .45rem;text-align:left}" +
+  ".lamp{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-right:.35rem;vertical-align:middle}" +
+  ".vert{background:#1a7f37}.ambre{background:#c47d00}.rouge{background:#b42318}" +
   "nav{margin:1rem 0}";
 
 function wrapHtml(lang, title, inner) {
@@ -29,12 +31,38 @@ function wrapHtml(lang, title, inner) {
 const CONTACT =
   '<a href="mailto:Laliberte22@gmail.com">Laliberte22@gmail.com</a>';
 
+const NAV =
+  '<nav><a href="/porte">/porte</a> · <a href="/privacy">/privacy</a> · <a href="/legal">/legal</a></nav>';
+
+export function porteDocument() {
+  return wrapHtml(
+    "fr",
+    "Acorn — porte",
+    [
+      NAV,
+      "<h1>Acorn</h1>",
+      "<p><strong>Les certitudes ont une date de fin.</strong></p>",
+      "<p lang=\"en\">Certainties expire.</p>",
+      "<p>Œuvre Acorn. Carte = FAMILLE. Ce canal n’est pas le produit. Preview ≠ quittance.</p>",
+      "<h2>Couleurs</h2>",
+      "<p><span class=\"lamp vert\"></span><strong>VERT</strong> — the file matches the card</p>",
+      "<p><span class=\"lamp ambre\"></span><strong>AMBRE</strong> — match ; a date is due again</p>",
+      "<p><span class=\"lamp rouge\"></span><strong>ROUGE</strong> — refuse</p>",
+      "<p>Un 200 sur <code>GET /juge</code> est <strong>APERÇU / CLASSIQUE</strong>. Pas un reçu.</p>",
+      "<h2>État live (honnête)</h2>",
+      "<p>Canal JSON : <code>*.workers.dev/juge</code>.</p>",
+      "<p>Vitrine <code>acorn-royal-dune-blend.grok.me/juge</code> : <strong>404 HOLD</strong> jusqu’au bind Carl. Pas un 2e slug.</p>",
+      "<p>Date : sur la carte, jour calendrier. Périmé = à refaire, pas « faux ».</p>",
+    ].join("\n"),
+  );
+}
+
 export function privacyDocument() {
   return wrapHtml(
     "fr",
     "Vie privée — acorn-juge",
     [
-      "<nav><a href=\"/privacy\">/privacy</a> · <a href=\"/legal\">/legal</a></nav>",
+      NAV,
       "<h1>Vie privée — acorn-juge</h1>",
       "<p><strong>Pas un avis juridique.</strong> Ce texte décrit ce dépôt. Il n’est pas un conseil, ni un sceau, ni une quittance. Carl décide.</p>",
       "<p>Ce Worker n’est <strong>pas</strong> le produit Acorn. Ce dépôt ne prétend pas qu’un dépôt produit Acorn public existe. Ne pas en inventer un.</p>",
@@ -43,7 +71,7 @@ export function privacyDocument() {
       "<table><thead><tr><th>Paramètre</th><th>Rôle</th></tr></thead><tbody>",
       "<tr><td><code>quelle</code></td><td>source des bits (<code>os</code> · <code>qrng</code> · <code>qkd</code>)</td></tr>",
       "<tr><td><code>temoin</code></td><td>force du témoin (<code>aucun</code> · <code>stat</code> · <code>fabricant</code> · <code>di</code>)</td></tr>",
-      "<tr><td><code>epsilon</code></td><td>marge d’erreur (nombre <strong>&gt; 0</strong>)</td></tr>",
+      "<tr><td><code>epsilon</code></td><td>marge d’erreur (nombre <strong>> 0</strong>)</td></tr>",
       "<tr><td><code>horizon</code></td><td>jour calendaire <code>YYYY-MM-DD</code></td></tr>",
       "<tr><td><code>transcript</code></td><td>exigé seulement si <code>temoin=di</code></td></tr>",
       "</tbody></table>",
@@ -84,7 +112,7 @@ export function legalDocument() {
     "fr",
     "Mentions — acorn-juge",
     [
-      "<nav><a href=\"/privacy\">/privacy</a> · <a href=\"/legal\">/legal</a></nav>",
+      NAV,
       "<h1>Mentions — acorn-juge</h1>",
       "<p><strong>Pas un avis juridique.</strong> Pas un sceau. Pas un reçu. Pas QUANTUM. Carl décide.</p>",
       "<h2>Portée</h2>",

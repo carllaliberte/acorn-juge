@@ -1,6 +1,6 @@
 /**
  * acorn-juge — GET /juge preview canal.
- * GET /privacy and GET /legal are served here (not origin proxy).
+ * GET /privacy, GET /legal and GET /porte are served here (not origin proxy).
  * Preview, not a receipt, not a seal, not QUANTUM.
  *
  * Face (vitrine, nominative grok.me slug — not a FAMILLE-owned domain):
@@ -13,20 +13,13 @@
  * Do not unwind d55799e. ε = 0 stays a lie.
  */
 
-import { legalDocument, privacyDocument } from "./pages.js";
+import { legalDocument, privacyDocument, porteDocument } from "./pages.js";
 
 const ORIGIN = "https://acorn-royal-dune-blend.grok.me";
 const QUELLE = ["os", "qrng", "qkd"];
 const TEMOIN = ["aucun", "stat", "fabricant", "di"];
 const PREVIEW_ID = "preview00001";
 
-/**
- * CORS allowlist for JSON / OPTIONS. Carl can widen later.
- * Start here only — do not invent extra domains:
- *   - ORIGIN (vitrine)
- *   - this Worker's own *.workers.dev host when deployed (from req.url)
- * Never send Access-Control-Allow-Origin: *.
- */
 function parseOrigin(value) {
   if (value == null || String(value).trim() === "") return null;
   try {
@@ -57,7 +50,6 @@ function isAllowlistedOrigin(origin, req) {
 function reflectAllowlistedOrigin(req) {
   const incoming = req.headers.get("Origin");
   if (incoming == null || String(incoming).trim() === "") {
-    // no Origin: same-origin / non-browser — advertise the vitrine, never *
     return ORIGIN;
   }
   if (isAllowlistedOrigin(incoming, req)) return parseOrigin(incoming);
@@ -130,10 +122,6 @@ function lireEpsilon(raw) {
   return { kind: "ok", value: n };
 }
 
-/**
- * Real Gregorian calendar day, not YYYY-MM-DD syntax.
- * Date.UTC rollover (Feb 31 → Mar) fails the round-trip.
- */
 function isCalendarDay(value) {
   if (value == null) return false;
   const s = String(value);
@@ -153,10 +141,6 @@ function todayUTC(now) {
   return (now || new Date()).toISOString().slice(0, 10);
 }
 
-/**
- * Hop-by-hop and credential headers stay here.
- * GET / forwards an allowlist only — never Cookie, Authorization, or *.
- */
 const PROXY_REQUEST_HEADERS = ["accept", "accept-language"];
 
 function proxyRequestHeaders(req) {
@@ -168,11 +152,6 @@ function proxyRequestHeaders(req) {
   return out;
 }
 
-/**
- * Preview decision for one request. Pure enough to test.
- * @param {Request} req
- * @param {{ today?: string, fetchImpl?: typeof fetch }} [opts]
- */
 export async function handle(req, opts = {}) {
   const url = new URL(req.url);
   const today = opts.today || todayUTC();
@@ -201,14 +180,17 @@ export async function handle(req, opts = {}) {
     return jugeGet(req, url.searchParams, today);
   }
 
-  if (url.pathname === "/privacy" || url.pathname === "/legal") {
+  if (url.pathname === "/privacy" || url.pathname === "/legal" || url.pathname === "/porte") {
     if (req.method !== "GET") {
       return json(req, 405, { error: "method", preview: true }, { allow: "GET, OPTIONS" });
     }
-    return html(
-      req,
-      url.pathname === "/privacy" ? privacyDocument() : legalDocument(),
-    );
+    const doc =
+      url.pathname === "/privacy"
+        ? privacyDocument()
+        : url.pathname === "/legal"
+          ? legalDocument()
+          : porteDocument();
+    return html(req, doc);
   }
 
   const u = new URL(url.pathname + url.search, ORIGIN);

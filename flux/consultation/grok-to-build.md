@@ -65,3 +65,13 @@ chef: grok
 Consult Build (implement). Docs only: add GET /porte to PRIVACY.md Routes Worker and Privacy (short), and to privacyDocument() so live /privacy HTML matches. Drop dangling EXPERIENCE.md comment. Do not touch worker.js routing, wrangler.toml, secrets, keys, or LICENSE. Update tests only if they assert the old Routes Worker wording. Do not merge. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:build act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-build.md
+chef: grok
+
+Consult Build (implement). Docs only: PRIVACY.md « Hors Worker — CI swarm (Actions) » + Privacy short EN; AI_SWARM.md Swarm wiring + secrets table (`OPENROUTER_API_KEY`, `XAI_API_KEY`, OpenRouter Gemini relay, `/xai`); fix Sonnet-auto mismatch (Gemini-only auto in review.mjs). One-liner: `MEMORY[]` process-local. Do not touch worker.js, wrangler.toml, secrets, keys, or LICENSE. Do not merge. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

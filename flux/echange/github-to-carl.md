@@ -65,3 +65,13 @@ chef: grok
 HANDOFF. Docs-only after #25: list GET /porte in PRIVACY. Cosmétique. Quantum green read-only then Carl squash. Legal does not merge. Flags ≠ advice. Soft HOLD LIVE (Worker bind) unchanged by this PR. Never QUANTUM.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:carl act:HANDOFF mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-carl.md
+chef: grok
+
+HANDOFF. Docs-only after #28: PRIVACY CI OpenRouter+xAI + AI_SWARM sync. Cosmétique. Quantum green then Carl squash. Legal does not merge. Flags ≠ advice. Soft HOLD LIVE (vitrine bind) unchanged by this PR. Never QUANTUM.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

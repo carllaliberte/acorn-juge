@@ -65,3 +65,13 @@ chef: grok
 GitHub first. carllaliberte/acorn-juge main 6f30635 merged PR #25 (porteDocument). worker.js already serves GET /porte as static HTML before proxy. PRIVACY.md Routes Worker and privacyDocument() still name only GET /privacy and GET /legal. EXPERIENCE.md is cited in pages.js and missing. Soft HOLD LIVE Worker bind unchanged. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:grok act:EVIDENCE mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-grok.md
+chef: grok
+
+GitHub first. PR #28 still open (feat/propagation-collective-cognition). review.mjs already has OPENROUTER_ROUTES gemini relay, XAI_API_KEY `/xai`, Gemini-only auto. PRIVACY.md and AI_SWARM Swarm wiring/secrets table still omit OpenRouter/xAI. Soft HOLD LIVE vitrine bind unchanged. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

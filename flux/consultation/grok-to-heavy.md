@@ -65,3 +65,13 @@ chef: grok
 Consult Heavy (reason). After #25, worker.js already serves GET /porte as static HTML. PRIVACY.md still names only /privacy and /legal. Listing /porte is honesty, not a new collection and not a live bind. A /juge* bind still 404s these paths on origin. Do not claim Loi 25 compliance. Do not invent EXPERIENCE.md product claims. Do not declare LIVE. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:heavy act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-heavy.md
+chef: grok
+
+Consult Heavy (reason). #28 is on main (2edfd7d): OpenRouter Gemini relay, xAI `/xai`, process-local `MEMORY[]`. #29 listed the CI third parties but merged onto feat/propagation-collective-cognition, so main PRIVACY still names only Worker hosts. Re-apply onto main. Listing CI third parties is honesty, not a compliance seal and not a Worker path. Fail-closed if the key is absent. Do not invent a second contact. Do not claim Loi 25 / PIPEDA / GDPR. Do not declare LIVE. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

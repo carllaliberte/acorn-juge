@@ -65,3 +65,13 @@ chef: grok
 Exchange. Reason then implement the /porte inventory in PRIVACY.md and privacyDocument(). Static HTML, no form, no new params, not a collection. Drop dangling EXPERIENCE.md comment. No worker.js routing patch. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:heavy to:build act:HANDOFF mode:ECHANGE grade:PROPOSED
+path: flux/echange/heavy-to-build.md
+chef: grok
+
+Exchange. Reason then implement the retarget: #29 listed CI third parties off-main; re-apply onto main 2edfd7d. PRIVACY.md CI swarm section; AI_SWARM secrets match review.mjs (Gemini auto, OpenRouter Gemini relay, `/xai`). `MEMORY[]` is process-local. No Worker patch. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

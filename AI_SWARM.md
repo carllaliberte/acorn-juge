@@ -43,6 +43,7 @@ Mode `COLLECTIVE_COGNITION` on the existing mesh (`acorn.v0`). Not a second mesh
 Project default: `acorn-juge`. Memory does not leak to another project. `shareAcrossProjects` only if explicit.
 Channel states stay honest: DECLARED / CHANNEL NOT PRESENT / BLOCKED / UNAVAILABLE. Never CONNECTED without a real canal.
 503 = dated skip. Exit 0. Carl squash.
+`MEMORY[]` is process-local (tests/CI). Not a product user-PII store.
 
 ## Format
 
@@ -50,9 +51,9 @@ FINDING / EVIDENCE / RISK / ACTION / TEST / RESULT / HANDOFF
 
 ## Swarm wiring
 
-Architecture: GitHub Action `.github/workflows/swarm.yml` → `.github/swarm/review.mjs` → Anthropic / OpenAI / DeepSeek / Gemini. Prompt: `.github/swarm/prompt.md`. Comments only.
+Architecture: GitHub Action `.github/workflows/swarm.yml` → `.github/swarm/review.mjs` → Anthropic / OpenAI / DeepSeek / Gemini / OpenRouter / xAI. Prompt: `.github/swarm/prompt.md`. Comments only. OpenRouter is a Gemini relay (`google/gemini-2.5-flash`) when `GEMINI_API_KEY` is absent and `OPENROUTER_API_KEY` is set.
 
-Comments on a PR: `/swarm` `/sonnet` `/fable` `/fabre` `/chatgpt` `/deepseek` `/gemini`
+Comments on a PR: `/swarm` `/sonnet` `/fable` `/fabre` `/chatgpt` `/deepseek` `/gemini` `/xai`
 
 Commands are **slash tokens** at the start of a word (`/fable`), not path fragments (`.github/swarm/prompt.md` is not `/swarm`). `labeled` only runs Fable when the added label is `fable` / `fabre`. An `issue_comment` without a token does not default to auto.
 
@@ -60,10 +61,12 @@ Carl secrets (Actions, never in git):
 
 | Secret | Models |
 | --- | --- |
-| `ANTHROPIC_API_KEY` | Sonnet 5 (auto) + Fable 5 (on-demand) |
-| `OPENAI_API_KEY` | ChatGPT |
-| `DEEPSEEK_API_KEY` | DeepSeek |
-| `GEMINI_API_KEY` | Gemini |
+| `ANTHROPIC_API_KEY` | Sonnet 5 (on-demand `/sonnet`) + Fable 5 (on-demand) |
+| `OPENAI_API_KEY` | ChatGPT (on-demand) |
+| `DEEPSEEK_API_KEY` | DeepSeek (on-demand) |
+| `GEMINI_API_KEY` | Gemini (`/swarm` auto) |
+| `OPENROUTER_API_KEY` | Gemini relay (`google/gemini-2.5-flash`) if native Gemini key is absent |
+| `XAI_API_KEY` | xAI Grok-2 (`/xai`; `grok-2` → `grok-2-mini`) |
 
 Missing secret → skip that model (fail-closed). Job is `continue-on-error`. Fork PRs have no secrets.
 
@@ -79,7 +82,7 @@ Fable 5 adaptive thinking is always on; the caller uses `max_tokens: 8192` so te
 
 ## Open decisions (Carl)
 
-- Add the four Actions secrets (or a subset)
+- Add the Actions secrets (or a subset): `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`, `XAI_API_KEY`
 - When to `wrangler deploy` and bind `/juge` on the cited host
 - Whether Worker missing-ε 400 and famille sdk classique should ever collapse (default: **no**)
 - Pin Fable 5 (`claude-fable-5`, this PR, as requested) vs Fable 5.1 (`claude-fable-5-1`). Not auto-upgraded.

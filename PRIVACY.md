@@ -51,6 +51,16 @@ Des journaux peuvent exister chez l’hébergeur (Cloudflare et/ou grok.me).
 **Ce dépôt ne promet pas zéro journal.** Il ne contrôle pas les journaux
 d’infrastructure du tiers.
 
+## Hors Worker — CI swarm (Actions)
+
+Hors du chemin Worker GET `/juge`. Quand les secrets GitHub Actions sont
+posés, le contenu d’une PR ou d’un commentaire peut être transmis à des
+tiers pour une revue complémentaire : Anthropic, OpenAI, DeepSeek,
+Google Gemini, **OpenRouter** et/ou **xAI**.
+
+Clé absente → fail-closed (ce modèle est sauté). Ce n’est pas une
+déclaration de conformité. Ce n’est pas un avis juridique. Carl décide.
+
 ## Ce que ce code ne fait pas
 
 Dans `worker.js` de **ce** dépôt :
@@ -103,4 +113,8 @@ Québec frame Carl reads. **This repo does not claim compliance.**
 Live Worker routes `GET /privacy`, `GET /legal` and `GET /porte` are served
 by this Worker when it is in front of the host. `GET /porte` is static HTML:
 no form, no new query params, not a collection. The nominative grok.me
-origin itself may still 404 if hit without the Worker.
+origin itself may still 404 if hit without the Worker. Outside GET `/juge`:
+when GitHub Actions secrets are set, PR/comment content may go to third
+parties for complementary review (Anthropic, OpenAI, DeepSeek, Google
+Gemini, **OpenRouter**, and/or **xAI**). Missing key → fail-closed. Not a
+compliance claim. Not legal advice. Carl decides.

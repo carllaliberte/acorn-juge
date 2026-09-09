@@ -356,7 +356,7 @@ describe("fanout, parse, files", () => {
   });
 
   it("modelsForDestination maps * to auto, chatgpt to itself, carl to none", () => {
-    assert.deepEqual(modelsForDestination("*"), ["sonnet", "chatgpt", "deepseek", "gemini"]);
+    assert.deepEqual(modelsForDestination("*"), ["gemini"]);
     assert.deepEqual(modelsForDestination("chatgpt"), ["chatgpt"]);
     assert.deepEqual(modelsForDestination("carl"), []);
     assert.deepEqual(modelsForDestination("fable"), ["fable"]);

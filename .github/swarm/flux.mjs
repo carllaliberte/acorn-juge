@@ -512,7 +512,7 @@ export function formatEnvelope(packet) {
 
 export function modelsForDestination(to) {
   if (to === "*" || to == null || to === "") {
-    return ["sonnet", "chatgpt", "deepseek", "gemini"];
+    return ["gemini"];
   }
   if (isModel(to) && lookup(to)?.kind !== "guest") return [to];
   if (lookup(to)?.kind === "guest") return [];

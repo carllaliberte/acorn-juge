@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   MODELS,
+  XAI_FALLBACK,
+  OPENROUTER_ROUTES,
   commandsIn,
   parseTrigger,
   keyedModels,
@@ -11,6 +13,7 @@ import {
   formatComment,
   idsForComment,
   addressResult,
+  isQuotaOrMissing,
 } from "../.github/swarm/review.mjs";
 
 describe("swarm roster", () => {
@@ -21,7 +24,9 @@ describe("swarm roster", () => {
     assert.equal(MODELS.deepseek.model, "deepseek-v4-flash");
     assert.equal(MODELS.gemini.model, "gemini-3.8-flash");
     assert.equal(MODELS.fable.auto, false);
-    assert.equal(MODELS.sonnet.auto, true);
+    assert.equal(MODELS.sonnet.auto, false);
+    assert.equal(MODELS.gemini.auto, true);
+    assert.equal(MODELS.xai.model, "grok-2");
     assert.equal(MODELS.fable.maxTokens, 8192);
     assert.ok(MODELS.fable.maxTokens > MODELS.sonnet.maxTokens);
   });
@@ -30,8 +35,10 @@ describe("swarm roster", () => {
 describe("parseTrigger", () => {
   it("defaults to auto models — not Fable", () => {
     const ids = parseTrigger("", []);
-    assert.deepEqual(ids, ["sonnet", "chatgpt", "deepseek", "gemini"]);
+    assert.deepEqual(ids, ["gemini"]);
     assert.ok(!ids.includes("fable"));
+    assert.ok(!ids.includes("xai"));
+    assert.ok(!ids.includes("sonnet"));
   });
 
   it("maps /fable and /fabre and label fable to Fable 5", () => {
@@ -45,12 +52,8 @@ describe("parseTrigger", () => {
     assert.deepEqual(parseTrigger("/deepseek", []), ["deepseek"]);
     assert.deepEqual(parseTrigger("/gemini", []), ["gemini"]);
     assert.deepEqual(parseTrigger("/sonnet", []), ["sonnet"]);
-    assert.deepEqual(parseTrigger("/swarm", []), [
-      "sonnet",
-      "chatgpt",
-      "deepseek",
-      "gemini",
-    ]);
+    assert.deepEqual(parseTrigger("/swarm", []), ["gemini"]);
+    assert.deepEqual(parseTrigger("/xai", []), ["xai"]);
   });
 
   it("does not treat .github/swarm paths as /swarm", () => {
@@ -85,7 +88,7 @@ describe("flux addressing on comments", () => {
 
   it("broadcast /flux to:* is auto models, not Fable", () => {
     const r = idsForComment("/flux to:*", [], "issue_comment");
-    assert.deepEqual(r.ids, ["sonnet", "chatgpt", "deepseek", "gemini"]);
+    assert.deepEqual(r.ids, ["gemini"]);
   });
 
   it("to:carl stores envelope and calls no model", () => {
@@ -131,6 +134,25 @@ describe("keyedModels fail-closed", () => {
     );
     assert.equal(skip.length, 1);
     assert.equal(skip[0].id, "chatgpt");
+  });
+
+  it("OPENROUTER_API_KEY runs gemini only; XAI_API_KEY is grok-2 native", () => {
+    const { run, skip } = keyedModels(["gemini", "xai", "sonnet"], {
+      OPENROUTER_API_KEY: "or-test",
+    });
+    assert.deepEqual(
+      run.map((m) => m.id),
+      ["gemini"],
+    );
+    assert.equal(run[0].via, "openrouter");
+    assert.equal(OPENROUTER_ROUTES.gemini, "google/gemini-2.5-flash");
+    const native = keyedModels(["xai"], { XAI_API_KEY: "xai-test" });
+    assert.equal(native.run[0].model, "grok-2");
+    assert.deepEqual([...XAI_FALLBACK], ["grok-2", "grok-2-mini"]);
+    assert.equal(skip.find((s) => s.id === "xai").reason.includes("XAI_API_KEY"), true);
+    assert.equal(isQuotaOrMissing(new Error("gemini 503: busy")), true);
+    assert.equal(isQuotaOrMissing(new Error("xai 400: Model not found")), true);
+    assert.equal(isQuotaOrMissing(new Error("openrouter 500: boom")), false);
   });
 });
 

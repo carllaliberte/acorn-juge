@@ -2,7 +2,7 @@
 /**
  * Swarm review for acorn-juge. Complementary, not a judge.
  * Fail-closed: missing keys skip. Never merge. Never wrangler.
- * Fable 5 is on-demand (cost). Sonnet / ChatGPT / DeepSeek / Gemini auto if keyed.
+ * Gemini auto ($0). Grok-2 (xAI) on-demand. Per-model timeout/retry. 503 = dated skip.
  */
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -17,6 +17,12 @@ import {
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PROMPT_PATH = join(HERE, "prompt.md");
 
+export const OPENROUTER_ROUTES = Object.freeze({
+  gemini: "google/gemini-2.5-flash",
+});
+
+export const XAI_FALLBACK = Object.freeze(["grok-2", "grok-2-mini"]);
+
 export const MODELS = Object.freeze({
   sonnet: {
     id: "sonnet",
@@ -24,8 +30,10 @@ export const MODELS = Object.freeze({
     model: "claude-sonnet-5",
     provider: "anthropic",
     secret: "ANTHROPIC_API_KEY",
-    auto: true,
+    auto: false,
     maxTokens: 2048,
+    timeoutMs: 8000,
+    retries: 1,
   },
   fable: {
     id: "fable",
@@ -34,8 +42,9 @@ export const MODELS = Object.freeze({
     provider: "anthropic",
     secret: "ANTHROPIC_API_KEY",
     auto: false,
-    // Adaptive thinking is always on; 2048 is often eaten before text.
     maxTokens: 8192,
+    timeoutMs: 12000,
+    retries: 0,
   },
   chatgpt: {
     id: "chatgpt",
@@ -43,7 +52,9 @@ export const MODELS = Object.freeze({
     model: "gpt-5.6-terra",
     provider: "openai",
     secret: "OPENAI_API_KEY",
-    auto: true,
+    auto: false,
+    timeoutMs: 8000,
+    retries: 1,
   },
   deepseek: {
     id: "deepseek",
@@ -51,7 +62,9 @@ export const MODELS = Object.freeze({
     model: "deepseek-v4-flash",
     provider: "deepseek",
     secret: "DEEPSEEK_API_KEY",
-    auto: true,
+    auto: false,
+    timeoutMs: 8000,
+    retries: 1,
   },
   gemini: {
     id: "gemini",
@@ -60,17 +73,31 @@ export const MODELS = Object.freeze({
     provider: "gemini",
     secret: "GEMINI_API_KEY",
     auto: true,
+    timeoutMs: 8000,
+    retries: 1,
+  },
+  xai: {
+    id: "xai",
+    label: "xAI Grok-2",
+    model: "grok-2",
+    provider: "xai",
+    secret: "XAI_API_KEY",
+    auto: false,
+    maxTokens: 2048,
+    timeoutMs: 8000,
+    retries: 1,
   },
 });
 
 const TRIGGERS = {
-  "/swarm": ["sonnet", "chatgpt", "deepseek", "gemini"],
+  "/swarm": ["gemini"],
   "/sonnet": ["sonnet"],
   "/fable": ["fable"],
   "/fabre": ["fable"],
   "/chatgpt": ["chatgpt"],
   "/deepseek": ["deepseek"],
   "/gemini": ["gemini"],
+  "/xai": ["xai"],
 };
 
 function autoIds() {
@@ -160,14 +187,37 @@ export function addressResult(result, to = "github") {
 export function keyedModels(ids, env = process.env) {
   const run = [];
   const skip = [];
+  const orKey = String(env.OPENROUTER_API_KEY || "").trim();
   for (const id of ids) {
     const spec = MODELS[id];
     if (!spec) continue;
-    const key = String(env[spec.secret] || "").trim();
-    if (!key) skip.push({ id, reason: `missing ${spec.secret}` });
-    else run.push(spec);
+    const native = String(env[spec.secret] || "").trim();
+    if (native) {
+      run.push(spec);
+      continue;
+    }
+    if (orKey && OPENROUTER_ROUTES[id]) {
+      run.push({ ...spec, via: "openrouter", model: OPENROUTER_ROUTES[id] });
+      continue;
+    }
+    skip.push({ id, reason: `missing ${spec.secret}` });
   }
   return { run, skip };
+}
+
+export function isQuotaOrMissing(err) {
+  const m = String(err && err.message ? err.message : err);
+  return /\b(400|402|403|404|429|503)\b/.test(m);
+}
+
+export function withTimeout(promise, ms, label) {
+  const n = Number(ms) > 0 ? Number(ms) : 8000;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`${label} timeout ${n}ms`)), n);
+    }),
+  ]);
 }
 
 export function loadPrompt() {
@@ -290,28 +340,94 @@ async function callGemini(spec, system, user, key) {
   return parts.map((p) => p.text || "").join("\n");
 }
 
+async function callOpenRouter(spec, system, user, key) {
+  const { ok, status, json } = await postJson("https://openrouter.ai/api/v1/chat/completions", {
+    headers: {
+      authorization: `Bearer ${key}`,
+      "http-referer": "https://github.com/carllaliberte/acorn-juge",
+    },
+    body: {
+      model: spec.model,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+    },
+  });
+  if (!ok) throw new Error(`openrouter ${spec.id} ${status}: ${JSON.stringify(json).slice(0, 400)}`);
+  return json.choices?.[0]?.message?.content || "";
+}
+
+async function callXai(spec, system, user, key) {
+  let last = null;
+  for (const slug of XAI_FALLBACK) {
+    try {
+      const { ok, status, json } = await postJson("https://api.x.ai/v1/chat/completions", {
+        headers: { authorization: `Bearer ${key}` },
+        body: {
+          model: slug,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+        },
+      });
+      if (ok) return json.choices?.[0]?.message?.content || "";
+      last = new Error(`xai ${status}: ${JSON.stringify(json).slice(0, 400)}`);
+      if (!isQuotaOrMissing(last)) throw last;
+    } catch (err) {
+      last = err;
+      if (!isQuotaOrMissing(err)) throw err;
+    }
+  }
+  throw last || new Error("xai unavailable");
+}
+
 const CALLERS = {
   anthropic: callAnthropic,
   openai: callOpenAI,
   deepseek: callDeepSeek,
   gemini: callGemini,
+  xai: callXai,
 };
 
 export async function reviewOne(spec, system, user, env = process.env) {
-  const key = String(env[spec.secret] || "").trim();
+  const native = String(env[spec.secret] || "").trim();
+  const orKey = String(env.OPENROUTER_API_KEY || "").trim();
+  const viaOpenRouter = spec.via === "openrouter" || (!native && orKey && OPENROUTER_ROUTES[spec.id]);
+  const key = viaOpenRouter ? orKey : native;
   if (!key) return { id: spec.id, skipped: true, reason: `missing ${spec.secret}` };
-  const fn = CALLERS[spec.provider];
-  try {
-    const text = sanitizeReview(await fn(spec, system, user, key));
-    return { id: spec.id, label: spec.label, model: spec.model, text };
-  } catch (err) {
+  const fn = viaOpenRouter ? callOpenRouter : CALLERS[spec.provider];
+  const retries = Number(spec.retries) >= 0 ? Number(spec.retries) : 1;
+  const timeoutMs = Number(spec.timeoutMs) > 0 ? Number(spec.timeoutMs) : 8000;
+  let lastErr = null;
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const text = sanitizeReview(
+        await withTimeout(fn(spec, system, user, key), timeoutMs, spec.id),
+      );
+      return { id: spec.id, label: spec.label, model: spec.model, text };
+    } catch (err) {
+      lastErr = err instanceof Error ? err : new Error(String(err));
+      if (isQuotaOrMissing(lastErr)) break;
+    }
+  }
+  const message = lastErr ? lastErr.message : "unknown error";
+  if (isQuotaOrMissing(lastErr)) {
     return {
       id: spec.id,
       label: spec.label,
       model: spec.model,
-      error: err instanceof Error ? err.message : String(err),
+      skipped: true,
+      reason: `dated skip ${new Date().toISOString()} — ${message.slice(0, 180)}`,
     };
   }
+  return {
+    id: spec.id,
+    label: spec.label,
+    model: spec.model,
+    error: message,
+  };
 }
 
 export function formatComment({ run, skip, results }) {
@@ -433,15 +549,6 @@ export async function main(env = process.env) {
   const { run, skip } = keyedModels(ids, env);
 
   if (!run.length) {
-    const body = formatComment({ run, skip, results: [] });
-    if (token && repo && pr && meta.comment) {
-      const [owner, name] = repo.split("/");
-      await gh(`/repos/${owner}/${name}/issues/${pr}/comments`, {
-        method: "POST",
-        token,
-        body: { body },
-      });
-    }
     console.log("swarm skip (no keys)");
     return 0;
   }
@@ -473,10 +580,16 @@ export async function main(env = process.env) {
       user;
   }
   const dest = routed.flux?.from || "github";
-  const results = [];
-  for (const spec of run) {
-    const one = await reviewOne(spec, system, user, env);
-    results.push(routed.flux ? addressResult(one, dest) : one);
+  const results = await Promise.all(
+    run.map(async (spec) => {
+      const one = await reviewOne(spec, system, user, env);
+      return routed.flux ? addressResult(one, dest) : one;
+    }),
+  );
+  const useful = results.filter((r) => r && !r.skipped && !r.error && r.text);
+  if (!useful.length) {
+    console.log("swarm skip (quota or empty)");
+    return 0;
   }
   const text = formatComment({ run, skip, results });
   if (token && repo && pr) {

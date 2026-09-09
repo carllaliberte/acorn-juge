@@ -30,7 +30,8 @@ jobs:
           contains(github.event.comment.body, '/fabre') ||
           contains(github.event.comment.body, '/chatgpt') ||
           contains(github.event.comment.body, '/deepseek') ||
-          contains(github.event.comment.body, '/gemini')
+          contains(github.event.comment.body, '/gemini') ||
+          contains(github.event.comment.body, '/xai')
         )
       )
     runs-on: ubuntu-latest
@@ -51,4 +52,6 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: node .github/swarm/review.mjs

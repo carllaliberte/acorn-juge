@@ -10,11 +10,12 @@ Factual coordination memory. Not a seal. Not LIVE VERIFIED.
 | Grok | Chief / orchestrator. Writes. Decides. |
 | Grok Heavy | Always consult (reason) |
 | Grok Build | Always consult (implement) |
-| Claude Sonnet 5 | PR review + test/docs notes (`claude-sonnet-5`). Auto if `ANTHROPIC_API_KEY`. |
+| Claude Sonnet 5 | PR review + test/docs notes (`claude-sonnet-5`). On-demand if `ANTHROPIC_API_KEY`. |
 | Claude Fable 5 | Hard review, on-demand (`claude-fable-5`). `/fable` or label `fable`. Same Anthropic key. |
-| ChatGPT | Adversarial reviewer (`gpt-5.6-terra`). Auto if `OPENAI_API_KEY`. |
-| DeepSeek | Independent review (`deepseek-v4-flash`). Auto if `DEEPSEEK_API_KEY`. |
-| Gemini | Independent review (`gemini-3.8-flash`). Auto if `GEMINI_API_KEY`. |
+| ChatGPT | Adversarial reviewer (`gpt-5.6-terra`). On-demand if `OPENAI_API_KEY`. |
+| DeepSeek | Independent review (`deepseek-v4-flash`). On-demand if `DEEPSEEK_API_KEY`. |
+| Gemini | Independent review (`gemini-3.8-flash`). `/swarm` auto if keyed. Timeout/retry. 503 = dated skip. |
+| xAI Grok-2 | Independent review (`grok-2` → `grok-2-mini`). `/xai`. Timeout/retry. Exit 0. |
 | Cursor | Implementation on rails |
 | CI (`juge.yml`) | `npm test` on push/PR — the lock |
 | CI (`swarm.yml`) | Complementary comments. `continue-on-error`. Does not replace tests. |
@@ -35,6 +36,13 @@ None of the models merge, deploy, or declare LIVE.
 - Worker horizon ⊃ famille schema: `isCalendarDay` (real Gregorian day). `juge.v0.json` `horizon.pattern` is regex `YYYY-MM-DD` only. Document the écart; do not hide it; do not unwind the schema from this canal.
 - GET `/` proxy allowlists `accept` + `accept-language` only.
 - Flux is not a Worker route. Do not add `/flux` to `worker.js`. Do not invent a second host.
+
+## Collective cognition
+
+Mode `COLLECTIVE_COGNITION` on the existing mesh (`acorn.v0`). Not a second mesh. Not a judge.
+Project default: `acorn-juge`. Memory does not leak to another project. `shareAcrossProjects` only if explicit.
+Channel states stay honest: DECLARED / CHANNEL NOT PRESENT / BLOCKED / UNAVAILABLE. Never CONNECTED without a real canal.
+503 = dated skip. Exit 0. Carl squash.
 
 ## Format
 

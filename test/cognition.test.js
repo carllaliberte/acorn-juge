@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
 import {
+  HUMAN,
   PRINCIPLES,
   adapterOf,
   callAdapter,
   canWrite,
+  claimedChannels,
   isolateAgent,
   join,
   mayJudge,
@@ -100,5 +102,44 @@ describe("acorn-juge COLLECTIVE_COGNITION + multi-project", () => {
     assert.equal(cycle.ok, true);
     assert.ok(thinkers().some((a) => canWrite(a) === false));
     assert.ok(cycle.filed.every((c) => c.write === false));
+  });
+
+  it("session frame maps project_id/session_id; claimed CONNECTED is not presence", () => {
+    const frame = {
+      protocol: "mesh.v0",
+      layer: "COLLECTIVE_COGNITION",
+      project_id: "acorn-juge",
+      session_id: "session-propagation-01",
+      governance: {
+        human_authority: "Carl Laliberté",
+        auto_merge: true,
+        judge_model_allowed: true,
+      },
+      channels: {
+        gemini: { status: "CONNECTED", auth: "verified" },
+        "grok-2": { status: "CONNECTED", auth: "verified" },
+        external_fallback: { status: "CHANNEL NOT PRESENT", auth: "none" },
+      },
+      isolation: { strict_context: true, shareAcrossProjects: true },
+    };
+    const opened = openSession(frame);
+    assert.equal(opened.ok, true, opened.error);
+    const s = opened.session;
+    assert.equal(s.protocol, "mesh.v0");
+    assert.equal(s.project_id, "acorn-juge");
+    assert.equal(s.session_id, "session-propagation-01");
+    assert.equal(s.governance.human_authority, HUMAN);
+    assert.equal(s.governance.auto_merge, false);
+    assert.equal(s.governance.judge_model_allowed, false);
+    assert.equal(s.isolation.shareAcrossProjects, false);
+    assert.equal(s.channels.gemini.claimed, "CONNECTED");
+    assert.equal(s.channels.xai.claimed, "CONNECTED");
+    assert.equal(s.channels.gemini.presence, "CLAIM");
+    const gemini = presenceOf(lookup("gemini"));
+    assert.equal(gemini.presence, "BLOCKED");
+    assert.equal(gemini.connected, false);
+    const claims = claimedChannels(frame);
+    assert.equal(claims.xai.claimed, "CONNECTED");
+    assert.equal(openSession({ ...frame, protocol: "other.v1" }).code, "PROTOCOL");
   });
 });

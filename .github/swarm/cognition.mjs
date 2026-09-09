@@ -14,7 +14,8 @@ import {
 
 export const MODE = "COLLECTIVE_COGNITION";
 export const COGNITION_VERSION = "cognition.v0";
-export const DEFAULT_PROJECT = "acorn-juge";
+export const HUMAN = "Carl Laliberté";
+const CHANNEL_ALIAS = Object.freeze({ "grok-2": "xai", grok2: "xai" });
 
 export const PRINCIPLES = Object.freeze([
   "human_vision",
@@ -73,6 +74,37 @@ export function parseProject(raw) {
   const id = String(raw || DEFAULT_PROJECT).toLowerCase();
   if (!PROJECT_RE.test(id)) return fail("BAD_PROJECT", "project id must match mesh from/to");
   return { ok: true, id };
+}
+
+function normalizeChannelId(id) {
+  const key = String(id || "").toLowerCase();
+  return CHANNEL_ALIAS[key] || key;
+}
+
+/** Claims from a session frame. Never become presence. CONNECTED stays a runtime canal. */
+export function claimedChannels(frame = {}) {
+  const raw = frame && typeof frame === "object" ? frame.channels || {} : {};
+  const out = {};
+  for (const [id, row] of Object.entries(raw)) {
+    const status = String(row && row.status ? row.status : "DECLARED")
+      .toUpperCase()
+      .replace(/_/g, " ");
+    out[normalizeChannelId(id)] = {
+      claimed: status,
+      auth: row && row.auth ? String(row.auth) : "none",
+      presence: "CLAIM",
+    };
+  }
+  return Object.freeze(out);
+}
+
+export function governanceOf(frame = {}) {
+  const g = frame && frame.governance ? frame.governance : {};
+  return Object.freeze({
+    human_authority: String(g.human_authority || HUMAN),
+    auto_merge: false,
+    judge_model_allowed: false,
+  });
 }
 
 /** Thinkers: chef / consult / model / guest. Carl (judge) and canal seats do not cogitate. */
@@ -279,17 +311,26 @@ export function visibleTo(step, from, contributions = []) {
 
 export function openSession(input) {
   const raw = input && typeof input === "object" ? input : { topic: input };
-  const topic = clip(raw.topic || raw.body, 400);
+  if (raw.protocol && raw.protocol !== "mesh.v0" && raw.protocol !== "acorn.v0") {
+    return fail("PROTOCOL", "cognition rides mesh.v0 / acorn.v0 — not a second mesh");
+  }
+  if (raw.layer && raw.layer !== MODE) {
+    return fail("LAYER", "unique mode is COLLECTIVE_COGNITION");
+  }
+  const topic = clip(raw.topic || raw.body || raw.session_id, 400);
   if (!topic) return fail("BODY_MISSING", "session needs a question");
-  const project = parseProject(raw.project);
+  const project = parseProject(raw.project_id || raw.project);
   if (!project.ok) return project;
   const ts = isoTs(raw.ts);
-  const id = String(raw.id || newId("q"));
+  const id = String(raw.session_id || raw.id || newId("q"));
+  const iso = raw.isolation && typeof raw.isolation === "object" ? raw.isolation : {};
   const session = {
     mode: MODE,
     cognition: COGNITION_VERSION,
     flux: "acorn.v0",
+    protocol: "mesh.v0",
     project: project.id,
+    project_id: project.id,
     id,
     session_id: id,
     topic,
@@ -300,6 +341,12 @@ export function openSession(input) {
     relations: [],
     syntheses: [],
     lessons: [],
+    governance: governanceOf(raw),
+    isolation: Object.freeze({
+      strict_context: iso.strict_context !== false,
+      shareAcrossProjects: false,
+    }),
+    channels: claimedChannels(raw),
   };
   return { ok: true, session };
 }
@@ -532,7 +579,11 @@ export function synthesize(session, input = {}) {
 }
 
 export function runCycle(input = {}) {
-  const opened = openSession(input);
+  const opened = openSession({
+    ...input,
+    project: input.project || input.project_id,
+    session_id: input.session_id,
+  });
   if (!opened.ok) return opened;
   const session = opened.session;
   const first = runIndependent(session, { actor: input.actor, ts: input.ts });

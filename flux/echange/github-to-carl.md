@@ -75,3 +75,13 @@ chef: grok
 HANDOFF. Docs-only retarget after #29 landed off-main: PRIVACY CI OpenRouter+xAI on main 2edfd7d. Cosmétique. Quantum green then Carl squash to main. Legal does not merge. Flags ≠ advice. Soft HOLD LIVE (vitrine bind) unchanged by this PR. Never QUANTUM.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:carl act:HANDOFF mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-carl.md
+chef: grok
+
+HANDOFF. Docs-only after #32 chemin A: PRIVACY + pages + INCIDENT host story = workers.dev canal vs grok.me vitrine. Cosmétique. Soft HOLD LIVE reframed (canal JSON live on workers.dev; grok.me /juge 404 attendable). Quantum green then Carl squash. Legal does not merge. Flags ≠ advice. Never QUANTUM. Never a second grok.me.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

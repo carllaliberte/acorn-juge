@@ -85,6 +85,6 @@ does not run wrangler.
 After a green run the canal is the Worker URL above. Carl only.
 
 MIT License — this repository's code and documentation only. See [LICENSE](LICENSE) and [COPYRIGHT.md](COPYRIGHT.md).
-Privacy / incidents (this Worker only): [PRIVACY.md](PRIVACY.md) · [INCIDENT.md](INCIDENT.md) · live `GET /privacy` and `GET /legal` when this Worker is in front.
+Privacy / incidents (this Worker only): [PRIVACY.md](PRIVACY.md) · [INCIDENT.md](INCIDENT.md) · live https://acorn-juge.laliberte22.workers.dev/privacy
 This project is not formally verified.
 QUANTUM is not licensed here. Preview ≠ receipt.

@@ -2,8 +2,10 @@
 
 **Pas un avis juridique.** Liste de processus, pas un conseil. Carl décide.
 
-Portée : incident de sécurité ou de vie privée **suspecté** sur ce Worker
-GET `/juge` ou sur la vitrine nominative
+Portée : incident de sécurité ou de vie privée **suspecté** sur le canal
+JSON GET `/juge`
+https://acorn-juge.laliberte22.workers.dev/juge
+ou sur la vitrine HTML
 https://acorn-royal-dune-blend.grok.me
 — pas le produit Acorn, pas un autre dépôt.
 
@@ -55,7 +57,8 @@ publique. Personne d’autre ne déclare LIVE.
 ## Incident path (short)
 
 Not counsel. If a security or privacy incident is suspected on this Worker
-or the grok.me vitrine: **notify Carl Laliberté first** at
+canal (https://acorn-juge.laliberte22.workers.dev/juge) or the grok.me
+vitrine (https://acorn-royal-dune-blend.grok.me): **notify Carl Laliberté first** at
 [Laliberte22@gmail.com](mailto:Laliberte22@gmail.com). CAI and affected
 persons under Loi 25 / RLRQ c. P-39.1 art. 3.5 only when **Carl** finds a
 risk of serious injury. This file does not promise timelines. Carl decides.

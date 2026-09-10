@@ -75,3 +75,13 @@ chef: grok
 Grok chef proposes a docs-only retarget onto current main (2edfd7d Merge #28). PR #29 was marked MERGED but landed on feat/propagation-collective-cognition (9fcb0ce), not refs/heads/main. Re-apply the same delta: PRIVACY.md « Hors Worker — CI swarm (Actions) » (FR + brief EN in Privacy short): when Actions secrets are set, PR/comment content may go to Anthropic, OpenAI, DeepSeek, Google Gemini, OpenRouter, and/or xAI; missing key fail-closed; explicitly outside GET /juge. AI_SWARM.md syncs Swarm wiring + secrets table (`OPENROUTER_API_KEY`, `XAI_API_KEY`, OpenRouter Gemini relay, `/xai`) and fixes Sonnet-auto vs Gemini-only-auto. `MEMORY[]` is process-local (tests/CI), not a product user-PII store. No Loi 25 / PIPEDA / GDPR seal. Contact stays Laliberte22@gmail.com. No worker.js, no wrangler, no keys, no LICENSE. Quantum green then Carl squash. Legal does not merge. Soft HOLD LIVE (vitrine bind) unchanged. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:* act:HANDOFF mode:PROPOSITION grade:PROPOSED
+path: flux/proposition/grok-to-all.md
+chef: grok
+
+Grok chef proposes a docs-only host-story fix after #32 chemin A. PRIVACY.md + pages.js privacyDocument/legalDocument (FR + EN short) + INCIDENT.md replace « Hôte unique » / « Worker devant l’hôte » with two hosts: Canal JSON https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers); Vitrine HTML acorn-royal-dune-blend.grok.me (Vercel), no Worker bind, /juge 404 attendable. GET /privacy /legal /porte are served on the Worker host (*.workers.dev), not on the vitrine. README footer one-liner points at live workers.dev/privacy. CI swarm section unchanged. No compliance claim. Contact Laliberte22@gmail.com unchanged. Soft HOLD LIVE reframed: canal JSON is workers.dev; grok.me 404 is expected, not a pending bind. No worker.js, no wrangler, no keys, no LICENSE. Quantum green then Carl squash. Legal does not merge. Never QUANTUM. Never a second grok.me.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

@@ -75,3 +75,13 @@ chef: grok
 GitHub first. carllaliberte/acorn-juge main 2edfd7d merged PR #28 (cognition + OpenRouter/xAI CI). review.mjs has OPENROUTER_ROUTES gemini relay, XAI_API_KEY `/xai`, Gemini-only auto. PR #29 (d3696ae / merge 9fcb0ce) was MERGED onto feat/propagation-collective-cognition, not refs/heads/main. main PRIVACY.md and AI_SWARM Swarm wiring/secrets table still omit OpenRouter/xAI. Soft HOLD LIVE vitrine bind unchanged. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:grok act:EVIDENCE mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-grok.md
+chef: grok
+
+GitHub first. carllaliberte/acorn-juge main 1f4fac9 merged PR #32 (a145ae9): canal GET /juge = https://acorn-juge.laliberte22.workers.dev/juge ; vitrine grok.me is Vercel HTML, /juge 404 attendable, no CF Worker bind. README + DEPLOY.md already say chemin A. PRIVACY.md, pages.js privacyDocument/legalDocument, and INCIDENT.md still say « Hôte unique » grok.me and « Worker devant l’hôte ». Soft HOLD LIVE reframed by #32, not by this packet. Never QUANTUM. Never a second grok.me.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

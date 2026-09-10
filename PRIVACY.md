@@ -25,27 +25,29 @@ requête :
 Ce n’est **pas** un reçu. Ce n’est **pas** un sceau. Ce n’est **pas** QUANTUM.
 Un 200 ici est **APERÇU / CLASSIQUE**. Preview ≠ receipt.
 
-Hôte unique (vitrine nominative grok.me, pas un domaine FAMILLE) :
-https://acorn-royal-dune-blend.grok.me
+Canal JSON : https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers)
+
+Vitrine HTML : https://acorn-royal-dune-blend.grok.me (Vercel). Pas de bind
+Worker. `GET /juge` sur la vitrine = 404 HTML attendable. Pas un 2e slug.
+Pas un domaine FAMILLE.
 
 ## Routes Worker (déclaratif ↔ architectural)
 
-Quand **ce Worker** est devant l’hôte, `GET /privacy`, `GET /legal` et
-`GET /porte` sont servis ici (HTML 200). Ils ne passent pas par le proxy
-vers l’origine nominative grok.me.
+`GET /privacy`, `GET /legal` et `GET /porte` sont servis sur l’hôte Worker
+(`*.workers.dev`), pas sur la vitrine. HTML 200 sur
+https://acorn-juge.laliberte22.workers.dev/{privacy,legal,porte}.
 
 `GET /porte` est du HTML statique : pas de formulaire, pas de nouveaux
 paramètres de requête, pas une collecte.
 
-Frapper l’origine grok.me **sans** ce Worker devant peut encore 404. Ce
-fichier ne prétend pas que le slug origine a été corrigé. Un bind Carl
-limité à `/juge*` ne livre pas ces chemins. Ce n’est pas un reçu.
+La vitrine grok.me n’a pas ce Worker devant. Un 404 HTML là n’est pas un
+reçu Worker. Ce n’est pas un reçu.
 
 ## Hébergement (tiers)
 
-- **Cloudflare Worker** — exécution du script de ce dépôt.
-- **Vitrine nominative grok.me** — hébergement tiers, slug nominatif, pas un
-  domaine FAMILLE, pas un sceau.
+- **Cloudflare Workers** — canal JSON GET `/juge` sur `*.workers.dev`.
+- **Vitrine HTML grok.me (Vercel)** — slug nominatif, pas de bind Worker,
+  pas un domaine FAMILLE, pas un sceau. `GET /juge` = 404 HTML attendable.
 
 Des journaux peuvent exister chez l’hébergeur (Cloudflare et/ou grok.me).
 **Ce dépôt ne promet pas zéro journal.** Il ne contrôle pas les journaux
@@ -102,18 +104,19 @@ attestation. Les drapeaux ne sont pas des conseils. Carl décide.
 
 Not legal advice. This Worker is a GET `/juge` preview canal: JSON from query
 params (`quelle`, `temoin`, `epsilon`, `horizon`; `transcript` when `temoin=di`).
-Not a receipt, not a seal, not QUANTUM. Hosted on Cloudflare and a nominative
-grok.me vitrine (third-party). Host-level logs may exist — this repo does not
-promise zero logs. `Cookie` / `Authorization` are not forwarded. This repo has
-no `localStorage` / AES. Responsible person: Carl Laliberté, Québec —
-contact for privacy / incident notices:
+Not a receipt, not a seal, not QUANTUM. Canal JSON:
+https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers). Vitrine
+HTML: acorn-royal-dune-blend.grok.me (Vercel), no Worker bind; `/juge` 404
+expected. Host-level logs may exist — this repo does not promise zero logs.
+`Cookie` / `Authorization` are not forwarded. This repo has no `localStorage`
+/ AES. Responsible person: Carl Laliberté, Québec — contact for privacy /
+incident notices:
 [Laliberte22@gmail.com](mailto:Laliberte22@gmail.com). Not directed at children;
 no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the
 Québec frame Carl reads. **This repo does not claim compliance.**
-Live Worker routes `GET /privacy`, `GET /legal` and `GET /porte` are served
-by this Worker when it is in front of the host. `GET /porte` is static HTML:
-no form, no new query params, not a collection. The nominative grok.me
-origin itself may still 404 if hit without the Worker. Outside GET `/juge`:
+`GET /privacy`, `GET /legal` and `GET /porte` are served on the Worker host
+(`*.workers.dev`), not on the vitrine. `GET /porte` is static HTML: no form,
+no new query params, not a collection. Outside GET `/juge`:
 when GitHub Actions secrets are set, PR/comment content may go to third
 parties for complementary review (Anthropic, OpenAI, DeepSeek, Google
 Gemini, **OpenRouter**, and/or **xAI**). Missing key → fail-closed. Not a

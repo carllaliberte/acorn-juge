@@ -75,3 +75,13 @@ chef: grok
 Consult Build (implement). Docs only, branched from current main (2edfd7d), not the feature branch. Re-apply #29: PRIVACY.md « Hors Worker — CI swarm (Actions) » + Privacy short EN; AI_SWARM.md Swarm wiring + secrets table (`OPENROUTER_API_KEY`, `XAI_API_KEY`, OpenRouter Gemini relay, `/xai`); fix Sonnet-auto mismatch (Gemini-only auto in review.mjs). One-liner: `MEMORY[]` process-local. Do not touch worker.js, wrangler.toml, secrets, keys, or LICENSE. Do not merge. Never QUANTUM. Unique host only.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:build act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-build.md
+chef: grok
+
+Consult Build (implement). Docs only, branched from current main after #32 (1f4fac9). Replace unique-host / bind-model wording in PRIVACY.md, pages.js privacyDocument + legalDocument (FR + EN short), and INCIDENT.md. Optional README privacy footer → live workers.dev/privacy. Leave CI swarm section. Do not touch worker.js, wrangler.toml, secrets, keys, or LICENSE. Do not merge. Never QUANTUM. Never a second grok.me.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

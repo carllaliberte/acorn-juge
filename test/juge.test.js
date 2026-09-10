@@ -451,6 +451,18 @@ describe("GET /privacy and GET /legal — Worker pages, not origin proxy", () =>
     assert.doesNotMatch(t, /\bGDPR\b/);
   });
 
+  it("GET /privacy does not claim a live GET / proxy", async () => {
+    const { res, fetched } = await pageCall("/privacy");
+    const t = await res.text();
+    assert.equal(fetched, 0);
+    assert.equal(res.status, 200);
+    assert.doesNotMatch(t, /Le proxy GET/);
+    assert.doesNotMatch(t, /proxies GET \//);
+    assert.match(t, /not_this_canal/);
+    assert.match(t, /ne proxie pas/);
+    assert.match(t, /appareil/);
+  });
+
   it("GET /legal is 200 text/html and does not fetch the vitrine", async () => {
     const { res, fetched } = await pageCall("/legal");
     const t = await res.text();

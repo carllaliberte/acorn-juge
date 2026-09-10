@@ -2,15 +2,7 @@
  * acorn-juge — GET /juge preview canal.
  * GET /privacy, GET /legal and GET /porte are served here (not origin proxy).
  * Preview, not a receipt, not a seal, not QUANTUM.
- *
- * Face (vitrine, nominative grok.me slug — not a FAMILLE-owned domain):
- *   https://acorn-royal-dune-blend.grok.me
- *
- * Missing ε is a FLAG, not a lie and not an agreement:
- *   this Worker → 400 EPSILON_MISSING
- *   famille sdk (d55799e) → classique / manques
- *   GARDE → fail-closed EPSILON_MISSING until those two agree
- * Do not unwind d55799e. ε = 0 stays a lie.
+ * Unknown paths do NOT proxy the vitrine (audit 2026-09-10).
  */
 
 import { legalDocument, privacyDocument, porteDocument } from "./pages.js";
@@ -18,7 +10,8 @@ import { legalDocument, privacyDocument, porteDocument } from "./pages.js";
 const ORIGIN = "https://acorn-royal-dune-blend.grok.me";
 const QUELLE = ["os", "qrng", "qkd"];
 const TEMOIN = ["aucun", "stat", "fabricant", "di"];
-const PREVIEW_ID = "preview00001";
+const TRANSCRIPT_OK = /^[A-Za-z0-9._:-]{16,128}$/;
+const TRANSCRIPT_DENY = new Set(["bell-ok", "fake", "simule", "simulated", "true", "ok", "pass"]);
 
 function parseOrigin(value) {
   if (value == null || String(value).trim() === "") return null;
@@ -72,7 +65,8 @@ const PHRASE = Object.freeze({
   transcript: "Device-independent needs a transcript",
   method: "This canal is GET /juge",
   attest:
-    "This canal is GET /juge. POST /attest is not served here. The grok.me vitrine returns HTML 404 for /attest (verified 2026-09-03).",
+    "This canal is GET /juge. POST /attest is not served here. The grok.me vitrine returns HTML 404 for /attest.",
+  notThis: "Unknown path. This Worker does not proxy the vitrine.",
   classique: "Classical — phone entropy is not quantum",
   apercu: "Preview allow — not a receipt",
 });
@@ -125,7 +119,7 @@ function lireEpsilon(raw) {
 function isCalendarDay(value) {
   if (value == null) return false;
   const s = String(value);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(s)) return false;
   const y = Number(s.slice(0, 4));
   const m = Number(s.slice(5, 7));
   const d = Number(s.slice(8, 10));
@@ -139,6 +133,20 @@ function isCalendarDay(value) {
 
 function todayUTC(now) {
   return (now || new Date()).toISOString().slice(0, 10);
+}
+
+function transcriptOk(raw) {
+  if (raw == null) return false;
+  const s = String(raw).trim();
+  if (!s) return false;
+  if (TRANSCRIPT_DENY.has(s.toLowerCase())) return false;
+  return TRANSCRIPT_OK.test(s);
+}
+
+function appareilNomme(raw) {
+  if (raw == null) return false;
+  const s = String(raw).trim();
+  return s.length >= 3 && s.length <= 64 && !TRANSCRIPT_DENY.has(s.toLowerCase());
 }
 
 const PROXY_REQUEST_HEADERS = ["accept", "accept-language"];
@@ -155,9 +163,19 @@ function proxyRequestHeaders(req) {
 export async function handle(req, opts = {}) {
   const url = new URL(req.url);
   const today = opts.today || todayUTC();
-  const doFetch = opts.fetchImpl || fetch;
 
   if (req.method === "OPTIONS") return corsPreflight(req);
+
+  if (url.pathname === "/juge/") {
+    return new Response(null, {
+      status: 308,
+      headers: {
+        location: "/juge" + url.search,
+        ...corsHeaders(req),
+        "cache-control": "no-store",
+      },
+    });
+  }
 
   if (url.pathname === "/attest") {
     return json(req, 404, {
@@ -193,10 +211,11 @@ export async function handle(req, opts = {}) {
     return html(req, doc);
   }
 
-  const u = new URL(url.pathname + url.search, ORIGIN);
-  return doFetch(u.toString(), {
-    method: req.method,
-    headers: proxyRequestHeaders(req),
+  return json(req, 404, {
+    error: "not_this_canal",
+    preview: true,
+    phrase: PHRASE.notThis,
+    juge: "/juge",
   });
 }
 
@@ -206,6 +225,7 @@ function jugeGet(req, p, today) {
     !p.get("temoin") || p.get("temoin") === "none" ? "aucun" : p.get("temoin");
   const horizon = p.get("horizon");
   const transcript = p.get("transcript");
+  const appareil = p.get("appareil");
 
   if (!QUELLE.includes(quelle) || !TEMOIN.includes(temoin)) {
     return json(req, 400, {
@@ -244,7 +264,7 @@ function jugeGet(req, p, today) {
     });
   }
 
-  if (temoin === "di" && !transcript) {
+  if (temoin === "di" && !transcriptOk(transcript)) {
     return json(req, 400, {
       error: "transcript",
       phrase: PHRASE.transcript,
@@ -252,9 +272,16 @@ function jugeGet(req, p, today) {
     });
   }
 
-  const status = quelle === "os" ? "CLASSIQUE" : "APERÇU";
+  const temoinTient =
+    quelle === "qkd"
+      ? temoin === "di" && transcriptOk(transcript) && appareilNomme(appareil)
+      : quelle === "qrng"
+        ? (temoin === "stat" || temoin === "fabricant") && appareilNomme(appareil)
+        : false;
+
+  const status = quelle === "os" || !temoinTient ? "CLASSIQUE" : "APERÇU";
   return json(req, 200, {
-    id: PREVIEW_ID,
+    id: "preview-" + today,
     status,
     preview: true,
     receipt: false,
@@ -262,11 +289,21 @@ function jugeGet(req, p, today) {
     temoin,
     epsilon: eps.value,
     horizon,
+    as_of: today,
     phrase: status === "CLASSIQUE" ? PHRASE.classique : PHRASE.apercu,
   });
 }
 
-export { ORIGIN, PHRASE, lireEpsilon, isCalendarDay, proxyRequestHeaders, PROXY_REQUEST_HEADERS };
+export {
+  ORIGIN,
+  PHRASE,
+  lireEpsilon,
+  isCalendarDay,
+  proxyRequestHeaders,
+  PROXY_REQUEST_HEADERS,
+  transcriptOk,
+  appareilNomme,
+};
 
 export default {
   async fetch(req) {

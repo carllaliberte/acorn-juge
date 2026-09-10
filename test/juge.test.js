@@ -122,7 +122,7 @@ describe("GET /juge — preview, not a seal", () => {
 
   it("200 APERÇU for qrng at type level — still preview", async () => {
     const res = await call(
-      "/juge?quelle=qrng&temoin=stat&epsilon=0.01&horizon=2027-12-31",
+      "/juge?quelle=qrng&temoin=stat&epsilon=0.01&horizon=2027-12-31&appareil=lab-qrng-01",
     );
     const j = await body(res);
     assert.equal(res.status, 200);
@@ -353,53 +353,46 @@ describe("vitrine proxy", () => {
     assert.equal(ORIGIN, "https://acorn-royal-dune-blend.grok.me");
   });
 
-  it("proxies GET / to the vitrine host", async () => {
-    let seen = "";
+  it("GET / is 404 JSON not_this_canal and does not fetch the vitrine", async () => {
+    let fetched = 0;
     const res = await handle(req("/"), {
       today: TODAY,
-      fetchImpl: async (u) => {
-        seen = String(u);
+      fetchImpl: async () => {
+        fetched += 1;
         return new Response("face", {
           status: 200,
           headers: { "content-type": "text/html" },
         });
       },
     });
-    assert.equal(seen, ORIGIN + "/");
-    assert.equal(res.status, 200);
-    assert.equal(await res.text(), "face");
+    const j = await body(res);
+    assert.equal(fetched, 0);
+    assert.equal(res.status, 404);
+    assert.match(res.headers.get("content-type"), /application\/json/);
+    assert.equal(j.error, "not_this_canal");
+    assert.equal(j.preview, true);
+    assert.equal(j.juge, "/juge");
   });
 
-  it("does not forward cookie or authorization to the vitrine", async () => {
-    let seen;
-    const res = await handle(
-      req("/", {
-        headers: {
-          cookie: "session=secret",
-          authorization: "Bearer x",
-          accept: "text/html",
-          "accept-language": "fr",
-          "x-forwarded-for": "1.2.3.4",
-        },
-      }),
-      {
-        today: TODAY,
-        fetchImpl: async (_u, init) => {
-          seen = init && init.headers;
-          return new Response("face", {
-            status: 200,
-            headers: { "content-type": "text/html" },
-          });
-        },
+  it("POST / is 404 JSON not_this_canal and does not fetch the vitrine", async () => {
+    let fetched = 0;
+    const res = await handle(req("/", { method: "POST" }), {
+      today: TODAY,
+      fetchImpl: async () => {
+        fetched += 1;
+        return new Response("face", {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        });
       },
-    );
-    assert.equal(res.status, 200);
-    const h = seen instanceof Headers ? seen : new Headers(seen);
-    assert.equal(h.get("cookie"), null);
-    assert.equal(h.get("authorization"), null);
-    assert.equal(h.get("x-forwarded-for"), null);
-    assert.equal(h.get("accept"), "text/html");
-    assert.equal(h.get("accept-language"), "fr");
+    });
+    const j = await body(res);
+    assert.equal(fetched, 0);
+    assert.equal(res.status, 404);
+    assert.match(res.headers.get("content-type"), /application\/json/);
+    assert.equal(j.error, "not_this_canal");
+    assert.equal(j.preview, true);
+    assert.equal(j.juge, "/juge");
   });
 
   it("proxyRequestHeaders keep only the allowlist", () => {

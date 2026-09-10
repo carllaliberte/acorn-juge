@@ -119,7 +119,7 @@ function lireEpsilon(raw) {
 function isCalendarDay(value) {
   if (value == null) return false;
   const s = String(value);
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(s)) return false;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   const y = Number(s.slice(0, 4));
   const m = Number(s.slice(5, 7));
   const d = Number(s.slice(8, 10));

@@ -75,15 +75,16 @@ export function privacyDocument() {
       "<tr><td><code>transcript</code></td><td>exigé seulement si <code>temoin=di</code></td></tr>",
       "</tbody></table>",
       "<p>Ce n’est <strong>pas</strong> un reçu. Ce n’est <strong>pas</strong> un sceau. Ce n’est <strong>pas</strong> QUANTUM. Un 200 ici est <strong>APERÇU / CLASSIQUE</strong>. Preview ≠ receipt.</p>",
-      "<p>Hôte unique (vitrine nominative grok.me, pas un domaine FAMILLE) : https://acorn-royal-dune-blend.grok.me</p>",
+      "<p>Canal JSON : https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers)</p>",
+      "<p>Vitrine HTML : https://acorn-royal-dune-blend.grok.me (Vercel). Pas de bind Worker. <code>GET /juge</code> sur la vitrine = 404 HTML attendable. Pas un 2e slug. Pas un domaine FAMILLE.</p>",
       "<h2>Routes Worker (déclaratif ↔ architectural)</h2>",
-      "<p>Quand <strong>ce Worker</strong> est devant l’hôte, <code>GET /privacy</code>, <code>GET /legal</code> et <code>GET /porte</code> sont servis ici (HTML 200). Ils ne passent pas par le proxy vers l’origine nominative grok.me.</p>",
+      "<p><code>GET /privacy</code>, <code>GET /legal</code> et <code>GET /porte</code> sont servis sur l’hôte Worker (<code>*.workers.dev</code>), pas sur la vitrine. HTML 200 sur https://acorn-juge.laliberte22.workers.dev/{privacy,legal,porte}.</p>",
       "<p><code>GET /porte</code> est du HTML statique : pas de formulaire, pas de nouveaux paramètres de requête, pas une collecte.</p>",
-      "<p>Frapper l’origine grok.me <strong>sans</strong> ce Worker devant peut encore 404. Ce fichier ne prétend pas que le slug origine a été corrigé. Un bind Carl limité à <code>/juge*</code> ne livre pas ces chemins. Ce n’est pas un reçu.</p>",
+      "<p>La vitrine grok.me n’a pas ce Worker devant. Un 404 HTML là n’est pas un reçu Worker. Ce n’est pas un reçu.</p>",
       "<h2>Hébergement (tiers)</h2>",
       "<ul>",
-      "<li><strong>Cloudflare Worker</strong> — exécution du script de ce dépôt.</li>",
-      "<li><strong>Vitrine nominative grok.me</strong> — hébergement tiers, slug nominatif, pas un domaine FAMILLE, pas un sceau.</li>",
+      "<li><strong>Cloudflare Workers</strong> — canal JSON GET <code>/juge</code> sur <code>*.workers.dev</code>.</li>",
+      "<li><strong>Vitrine HTML grok.me (Vercel)</strong> — slug nominatif, pas de bind Worker, pas un domaine FAMILLE, pas un sceau. <code>GET /juge</code> = 404 HTML attendable.</li>",
       "</ul>",
       "<p>Des journaux peuvent exister chez l’hébergeur (Cloudflare et/ou grok.me). <strong>Ce dépôt ne promet pas zéro journal.</strong> Il ne contrôle pas les journaux d’infrastructure du tiers.</p>",
       "<h2>Ce que ce code ne fait pas</h2>",
@@ -103,9 +104,9 @@ export function privacyDocument() {
       "<p>Carl lit la <em>Loi modernisant des dispositions législatives en matière de protection des renseignements personnels</em> (<strong>Loi 25</strong>) et la <em>Loi sur la protection des renseignements personnels dans le secteur privé</em>, <strong>RLRQ c. P-39.1</strong>.</p>",
       "<p><strong>Ce dépôt ne se déclare pas conforme.</strong> Citer le cadre n’est pas une attestation. Les drapeaux ne sont pas des conseils. Carl décide.</p>",
       "<h2>Privacy (short)</h2>",
-      "<p>Not legal advice. This Worker is a GET <code>/juge</code> preview canal: JSON from query params (<code>quelle</code>, <code>temoin</code>, <code>epsilon</code>, <code>horizon</code>; <code>transcript</code> when <code>temoin=di</code>). Not a receipt, not a seal, not QUANTUM. Hosted on Cloudflare and a nominative grok.me vitrine (third-party). Host-level logs may exist — this repo does not promise zero logs. <code>Cookie</code> / <code>Authorization</code> are not forwarded. This repo has no <code>localStorage</code> / AES. Responsible person: Carl Laliberté, Québec — contact for privacy / incident notices: " +
+      "<p>Not legal advice. This Worker is a GET <code>/juge</code> preview canal: JSON from query params (<code>quelle</code>, <code>temoin</code>, <code>epsilon</code>, <code>horizon</code>; <code>transcript</code> when <code>temoin=di</code>). Not a receipt, not a seal, not QUANTUM. Canal JSON: https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers). Vitrine HTML: acorn-royal-dune-blend.grok.me (Vercel), no Worker bind; <code>/juge</code> 404 expected. Host-level logs may exist — this repo does not promise zero logs. <code>Cookie</code> / <code>Authorization</code> are not forwarded. This repo has no <code>localStorage</code> / AES. Responsible person: Carl Laliberté, Québec — contact for privacy / incident notices: " +
         CONTACT +
-        ". Not directed at children; no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the Québec frame Carl reads. <strong>This repo does not claim compliance.</strong> Live Worker routes <code>GET /privacy</code>, <code>GET /legal</code> and <code>GET /porte</code> are served by this Worker when it is in front of the host. <code>GET /porte</code> is static HTML: no form, no new query params, not a collection. The nominative grok.me origin itself may still 404 if hit without the Worker.</p>",
+        ". Not directed at children; no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the Québec frame Carl reads. <strong>This repo does not claim compliance.</strong> <code>GET /privacy</code>, <code>GET /legal</code> and <code>GET /porte</code> are served on the Worker host (<code>*.workers.dev</code>), not on the vitrine. <code>GET /porte</code> is static HTML: no form, no new query params, not a collection.</p>",
     ].join("\n"),
   );
 }
@@ -120,7 +121,9 @@ export function legalDocument() {
       "<p><strong>Pas un avis juridique.</strong> Pas un sceau. Pas un reçu. Pas QUANTUM. Carl décide.</p>",
       "<h2>Portée</h2>",
       "<p>Ce Worker (dépôt <code>acorn-juge</code>) est un canal Cloudflare <strong>GET /juge</strong>. Aperçu JSON (<code>preview: true</code>, <code>receipt: false</code>). Ce Worker n’est <strong>pas</strong> le produit Acorn. Ne pas inventer un dépôt produit Acorn.</p>",
-      "<p>Hôte vitrine nominative : https://acorn-royal-dune-blend.grok.me</p>",
+      "<p>Canal JSON : https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers)</p>",
+      "<p>Vitrine HTML : https://acorn-royal-dune-blend.grok.me (Vercel). Pas de bind Worker. <code>GET /juge</code> sur la vitrine = 404 HTML attendable. Pas un 2e slug. Pas un domaine FAMILLE.</p>",
+      "<p><code>GET /privacy</code>, <code>GET /legal</code> et <code>GET /porte</code> sont servis sur l’hôte Worker (<code>*.workers.dev</code>), pas sur la vitrine.</p>",
       "<h2>Vie privée</h2>",
       "<p>Voir <a href=\"/privacy\">GET /privacy</a> (même substance que <code>PRIVACY.md</code>). Contact : Carl Laliberté, Québec — " +
         CONTACT +
@@ -129,7 +132,7 @@ export function legalDocument() {
       "<p>Copyright (c) 2026 Carl Laliberté, Québec. Auteur unique. Pas de co-auteurs.</p>",
       "<p>MIT — code et documentation de <strong>ce</strong> dépôt seulement. Voir <code>LICENSE</code> et <code>COPYRIGHT.md</code> dans le dépôt. QUANTUM n’est pas licencié ici. Acorn l’œuvre (autre dépôt / produit) reste All Rights Reserved et n’est pas licenciée ici.</p>",
       "<h2>Legal (short)</h2>",
-      "<p>Not legal advice. This Worker is the GET <code>/juge</code> preview canal only — not the Acorn product, not a receipt, not a seal, not QUANTUM. Privacy: <a href=\"/privacy\">/privacy</a>. MIT as in <code>LICENSE</code> / <code>COPYRIGHT.md</code> (this repository only; Copyright (c) 2026 Carl Laliberté, Québec). Contact: " +
+      "<p>Not legal advice. This Worker is the GET <code>/juge</code> preview canal only — not the Acorn product, not a receipt, not a seal, not QUANTUM. Canal JSON: https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers). Vitrine HTML: acorn-royal-dune-blend.grok.me (Vercel), no Worker bind; <code>/juge</code> 404 expected. <code>GET /privacy</code>, <code>GET /legal</code> and <code>GET /porte</code> are served on the Worker host (<code>*.workers.dev</code>), not on the vitrine. Privacy: <a href=\"/privacy\">/privacy</a>. MIT as in <code>LICENSE</code> / <code>COPYRIGHT.md</code> (this repository only; Copyright (c) 2026 Carl Laliberté, Québec). Contact: " +
         CONTACT +
         ". No Loi 25 / PIPEDA / GDPR compliance claim. Flags ≠ advice.</p>",
     ].join("\n"),

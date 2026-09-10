@@ -3,7 +3,13 @@
 Preview, not a receipt. Not a second grok.me.
 Bots cannot hold the Cloudflare token. Stop here until Carl runs wrangler.
 
-Laptop:
+## Canal (chemin A — 2026-09-10)
+
+JSON GET `/juge` : `https://acorn-juge.laliberte22.workers.dev/juge`
+Vitrine HTML : `https://acorn-royal-dune-blend.grok.me` (Vercel). `GET /juge` là = 404 HTML. Attendable.
+Pas de bind Worker sur grok.me. Pas une zone Cloudflare. Pas un 2e slug.
+
+Laptop (redeploy Worker seulement) :
 
 ```bash
 cd acorn-juge
@@ -17,20 +23,13 @@ GitHub → Settings → Secrets → `CLOUDFLARE_API_TOKEN`.
 Then Actions → Deploy Worker → Run workflow.
 That button is Carl. Not a model. `wrangler.toml` is at the repo root.
 
-Bind the Worker route on the cited host:
+## Checklist curls (canal = workers.dev)
 
-`https://acorn-royal-dune-blend.grok.me/juge`
-
-Do not create another `*.grok.me`.
-
-## Checklist curls (after bind)
-
-Until bind, every `/juge` path on the vitrine is **404 HTML**. That is **NOT LIVE VERIFIED**.
-After bind, expect JSON as noted. `preview: true`, `receipt: false`. Never QUANTUM.
+`preview: true`, `receipt: false`. Never QUANTUM.
 CORS: never `Access-Control-Allow-Origin: *`.
 
 ```bash
-HOST=https://acorn-royal-dune-blend.grok.me
+HOST=https://acorn-juge.laliberte22.workers.dev
 ```
 
 ### 1. ε missing → 400 `EPSILON_MISSING` (not the lie)

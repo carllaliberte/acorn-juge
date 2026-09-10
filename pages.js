@@ -73,6 +73,7 @@ export function privacyDocument() {
       "<tr><td><code>epsilon</code></td><td>marge d’erreur (nombre <strong>> 0</strong>)</td></tr>",
       "<tr><td><code>horizon</code></td><td>jour calendaire <code>YYYY-MM-DD</code></td></tr>",
       "<tr><td><code>transcript</code></td><td>exigé seulement si <code>temoin=di</code></td></tr>",
+      "<tr><td><code>appareil</code></td><td>nom d’appareil (3–64) exigé pour APERÇU qrng/qkd avec témoin valide; non renvoyé dans le JSON; fourni par l’appelant</td></tr>",
       "</tbody></table>",
       "<p>Ce n’est <strong>pas</strong> un reçu. Ce n’est <strong>pas</strong> un sceau. Ce n’est <strong>pas</strong> QUANTUM. Un 200 ici est <strong>APERÇU / CLASSIQUE</strong>. Preview ≠ receipt.</p>",
       "<p>Canal JSON : https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers)</p>",
@@ -90,7 +91,7 @@ export function privacyDocument() {
       "<h2>Ce que ce code ne fait pas</h2>",
       "<p>Dans <code>worker.js</code> de <strong>ce</strong> dépôt :</p>",
       "<ul>",
-      "<li>Le proxy GET <code>/</code> n’envoie qu’une allowlist (<code>accept</code>, <code>accept-language</code>). <strong>Cookie</strong> et <strong>Authorization</strong> ne sont pas transférés.</li>",
+      "<li>Un chemin inconnu renvoie 404 JSON <code>not_this_canal</code>. Ce Worker ne proxie pas la vitrine. Le slug ORIGIN reste documentaire seulement. <code>PROXY_REQUEST_HEADERS</code> est mort sur ce chemin — ce n’est pas une allowlist Cookie/Authorization pour un proxy vivant.</li>",
       "<li>CORS JSON n’est pas <code>*</code>.</li>",
       "<li>Il n’y a <strong>pas</strong> de <code>localStorage</code>, <strong>pas</strong> d’AES, <strong>pas</strong> de coffre local dans ce dépôt. Ne pas l’affirmer ici.</li>",
       "</ul>",
@@ -104,7 +105,7 @@ export function privacyDocument() {
       "<p>Carl lit la <em>Loi modernisant des dispositions législatives en matière de protection des renseignements personnels</em> (<strong>Loi 25</strong>) et la <em>Loi sur la protection des renseignements personnels dans le secteur privé</em>, <strong>RLRQ c. P-39.1</strong>.</p>",
       "<p><strong>Ce dépôt ne se déclare pas conforme.</strong> Citer le cadre n’est pas une attestation. Les drapeaux ne sont pas des conseils. Carl décide.</p>",
       "<h2>Privacy (short)</h2>",
-      "<p>Not legal advice. This Worker is a GET <code>/juge</code> preview canal: JSON from query params (<code>quelle</code>, <code>temoin</code>, <code>epsilon</code>, <code>horizon</code>; <code>transcript</code> when <code>temoin=di</code>). Not a receipt, not a seal, not QUANTUM. Canal JSON: https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers). Vitrine HTML: acorn-royal-dune-blend.grok.me (Vercel), no Worker bind; <code>/juge</code> 404 expected. Host-level logs may exist — this repo does not promise zero logs. <code>Cookie</code> / <code>Authorization</code> are not forwarded. This repo has no <code>localStorage</code> / AES. Responsible person: Carl Laliberté, Québec — contact for privacy / incident notices: " +
+      "<p>Not legal advice. This Worker is a GET <code>/juge</code> preview canal: JSON from query params (<code>quelle</code>, <code>temoin</code>, <code>epsilon</code>, <code>horizon</code>; <code>transcript</code> when <code>temoin=di</code>; <code>appareil</code> — device name 3–64, required for APERÇU qrng/qkd with a valid temoin; not returned in the JSON; supplied by the caller). Not a receipt, not a seal, not QUANTUM. Canal JSON: https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers). Vitrine HTML: acorn-royal-dune-blend.grok.me (Vercel), no Worker bind; <code>/juge</code> 404 expected. Host-level logs may exist — this repo does not promise zero logs. Unknown paths return 404 JSON <code>not_this_canal</code>. This Worker does not proxy the vitrine. The ORIGIN slug is documentation-only. <code>PROXY_REQUEST_HEADERS</code> is dead on that path — not a live Cookie/Authorization proxy allowlist. This repo has no <code>localStorage</code> / AES. Responsible person: Carl Laliberté, Québec — contact for privacy / incident notices: " +
         CONTACT +
         ". Not directed at children; no sensitive collection intended; Carl decides. Loi 25 / RLRQ c. P-39.1 is the Québec frame Carl reads. <strong>This repo does not claim compliance.</strong> <code>GET /privacy</code>, <code>GET /legal</code> and <code>GET /porte</code> are served on the Worker host (<code>*.workers.dev</code>), not on the vitrine. <code>GET /porte</code> is static HTML: no form, no new query params, not a collection.</p>",
     ].join("\n"),

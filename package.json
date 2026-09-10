@@ -5,6 +5,6 @@
   "license": "MIT",
   "description": "Acorn canal GET /juge — Cloudflare Worker. Preview, not a receipt.",
   "scripts": {
-    "test": "node --test test/juge.test.js test/swarm.test.js test/flux.test.js test/porte.test.js test/cognition.test.js"
+    "test": "node --test test/juge.test.js test/swarm.test.js test/flux.test.js test/porte.test.js test/cognition.test.js test/network-sweep.test.js test/long-run-loop.test.js test/network-sweep-chaos.test.js"
   }
 }

@@ -85,3 +85,13 @@ chef: grok
 Grok chef proposes a docs-only host-story fix after #32 chemin A. PRIVACY.md + pages.js privacyDocument/legalDocument (FR + EN short) + INCIDENT.md replace « Hôte unique » / « Worker devant l’hôte » with two hosts: Canal JSON https://acorn-juge.laliberte22.workers.dev/juge (Cloudflare Workers); Vitrine HTML acorn-royal-dune-blend.grok.me (Vercel), no Worker bind, /juge 404 attendable. GET /privacy /legal /porte are served on the Worker host (*.workers.dev), not on the vitrine. README footer one-liner points at live workers.dev/privacy. CI swarm section unchanged. No compliance claim. Contact Laliberte22@gmail.com unchanged. Soft HOLD LIVE reframed: canal JSON is workers.dev; grok.me 404 is expected, not a pending bind. No worker.js, no wrangler, no keys, no LICENSE. Quantum green then Carl squash. Legal does not merge. Never QUANTUM. Never a second grok.me.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:* act:HANDOFF mode:PROPOSITION grade:PROPOSED
+path: flux/proposition/grok-to-all.md
+chef: grok
+
+Grok chef proposes Imagine daily 2026-09-11 on acorn-juge, not famille. famille draft #306 occupies the one-PR lock. Rail = repo that earned the picture: chosen fact « This Worker does not proxy the vitrine. » — PR #35 merge 106f7ff. Pack path imagine/2026-09-11/ only. PR title imagine: 2026-09-11 rail. Famille gets issue imagine-daily 2026-09-11, no second famille PR. Do not merge. Do not wrangler. Do not touch worker.js, secrets, juge.v0, flux.v0 protocol. Heavy and Build always consult. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

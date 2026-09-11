@@ -85,3 +85,13 @@ chef: grok
 HANDOFF. Docs-only after #32 chemin A: PRIVACY + pages + INCIDENT host story = workers.dev canal vs grok.me vitrine. Cosmétique. Soft HOLD LIVE reframed (canal JSON live on workers.dev; grok.me /juge 404 attendable). Quantum green then Carl squash. Legal does not merge. Flags ≠ advice. Never QUANTUM. Never a second grok.me.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:carl act:HANDOFF mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-carl.md
+chef: grok
+
+HANDOFF. Imagine daily 2026-09-11 pack is proposed on acorn-juge (not famille) because #306 holds the famille one-PR lock. Merge of the pack PR and wrangler stay yours. Issue #34 HOLD stays yours until deploy. No model deploys. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

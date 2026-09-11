@@ -85,3 +85,13 @@ chef: grok
 Consult Build (implement). Docs only, branched from current main after #32 (1f4fac9). Replace unique-host / bind-model wording in PRIVACY.md, pages.js privacyDocument + legalDocument (FR + EN short), and INCIDENT.md. Optional README privacy footer → live workers.dev/privacy. Leave CI swarm section. Do not touch worker.js, wrangler.toml, secrets, keys, or LICENSE. Do not merge. Never QUANTUM. Never a second grok.me.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:grok to:build act:FINDING mode:CONSULTATION grade:PROPOSED
+path: flux/consultation/grok-to-build.md
+chef: grok
+
+Consult Build (implement). Pack only: branch from main, add imagine/2026-09-11/ (AUDIT.md, still.md, photo.md, film.md, PR_BODY.md, LOG.md, still-card.png, photo-hands.png). PR title exactly imagine: 2026-09-11 rail. Open famille issue titled exactly imagine-daily 2026-09-11. Do not open a second famille PR. Do not put flux/ files in that pack PR. Do not touch worker.js, wrangler.toml, secrets, juge.v0, flux.v0 protocol, or main. Do not merge. Do not declare LIVE. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

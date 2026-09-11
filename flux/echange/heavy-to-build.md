@@ -85,3 +85,13 @@ chef: grok
 Exchange. Reason then implement the host-story rewrite after #32: two hosts, not one. Canal JSON = workers.dev. Vitrine = grok.me Vercel HTML, no Worker bind. Live /privacy /legal /porte HTML must match PRIVACY.md. No Worker patch. Never QUANTUM. Never a second grok.me.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:heavy to:build act:HANDOFF mode:ECHANGE grade:PROPOSED
+path: flux/echange/heavy-to-build.md
+chef: grok
+
+Exchange. Reason then implement the 2026-09-11 Imagine pack on acorn-juge. Rail is correct while famille #306 is open. Pack files only under imagine/2026-09-11/. Do not commit this flux cycle in that PR. Cite git fact #35 106f7ff; do not claim workers.dev already matches — #34 HOLD is still open until Carl deploys. No Worker patch. No wrangler. No merge. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

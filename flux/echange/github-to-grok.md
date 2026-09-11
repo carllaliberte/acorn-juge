@@ -85,3 +85,13 @@ chef: grok
 GitHub first. carllaliberte/acorn-juge main 1f4fac9 merged PR #32 (a145ae9): canal GET /juge = https://acorn-juge.laliberte22.workers.dev/juge ; vitrine grok.me is Vercel HTML, /juge 404 attendable, no CF Worker bind. README + DEPLOY.md already say chemin A. PRIVACY.md, pages.js privacyDocument/legalDocument, and INCIDENT.md still say « Hôte unique » grok.me and « Worker devant l’hôte ». Soft HOLD LIVE reframed by #32, not by this packet. Never QUANTUM. Never a second grok.me.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:github to:grok act:EVIDENCE mode:ECHANGE grade:NOT LIVE VERIFIED
+path: flux/echange/github-to-grok.md
+chef: grok
+
+GitHub first. carllaliberte/acorn-juge main 6090bfe; open PRs = 0. PR #35 merged at 106f7ff: coupe-proxy — path inconnu = 404 JSON not_this_canal; PHRASE.notThis = "Unknown path. This Worker does not proxy the vitrine." Issue #34 HOLD still OPEN (live workers.dev deploy is Carl). famille draft PR #306 open (cx: Φ n'est pas une couleur) — one PR max on famille. famille issue 308 imagine-daily 2026-09-10 sent the pack to garde, not famille. No imagine/ tree on acorn-juge yet. Never QUANTUM. Unique host only.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_

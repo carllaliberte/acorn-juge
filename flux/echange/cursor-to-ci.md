@@ -75,3 +75,13 @@ chef: grok
 Docs-only PRIVACY/INCIDENT host story after #32 chemin A. npm test remains the lock. Do not replace juge.yml. Do not touch worker.js. Do not run wrangler. Never QUANTUM.
 
 _flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
+
+---
+
+FLUX from:cursor to:ci act:ACTION mode:ECHANGE grade:PROPOSED
+path: flux/echange/cursor-to-ci.md
+chef: grok
+
+Imagine pack under imagine/2026-09-11/ only. npm test remains the lock. Do not replace juge.yml. Do not touch worker.js. Do not run wrangler. Never QUANTUM.
+
+_flux acorn.v0 · chef:grok · preview:true · receipt:false · not LIVE_VERIFIED_
